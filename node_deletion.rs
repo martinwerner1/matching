@@ -68,13 +68,6 @@ fn transform_bp_gender(bp:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 	new_bp
 }
 
-
-
-
-
-
-
-
 fn bp_matrix_for_women(bp:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 	let mut wbp:Vec<Vec<bool>>=vec![];
 	let n:usize=bp.len().isqrt();
