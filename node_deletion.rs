@@ -127,13 +127,8 @@ pub fn get_nodes_idx(bp:&Vec<Vec<bool>>)->Vec<usize>{
 pub fn tests(){
 	let bp=IOClass::get_bp_automatically();
 	let wbp=transform_bp_gender(&bp);
-	//let wbp2=bp_matrix_for_women(&bp);
-	//println!("WOMEN BP THE SAME:{}",wbp1==wbp2);
-	
 	image::img_bp_matrix_lines(&bp,"pic/bp_test/mbp.png".to_string());
-	image::img_bp_matrix_lines(&wbp,"pic/bp_test/wbp.png".to_string());
-	//image::img_bp_matrix_lines(&wbp2,"pic/bp_test/wbp2.png".to_string());
-	
+	image::img_bp_matrix_lines(&wbp,"pic/bp_test/wbp.png".to_string());	
 	let bp1=node_deletion_complete(&bp);
 	let wbp1=transform_bp_gender(&bp1);
 	let wbp1=node_deletion_complete(&wbp1);
