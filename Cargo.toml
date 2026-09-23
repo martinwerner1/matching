@@ -1,0 +1,17 @@
+[package]
+name="display"
+version="0.12.0"
+edition="2024"
+
+[lib]
+name="display"
+path="src/lib.rs"
+
+[dependencies]
+rand="*"
+highs="*"
+image="*"
+imageproc="*"
+ab_glyph="*"
+ndarray="*"
+bitvec="*"
