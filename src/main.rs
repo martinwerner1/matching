@@ -47,7 +47,7 @@ fn main(){
 	//deep_search::test();
 	
 	// BITSYNC ALGORITHM, IT OUTPUTS THE ROW ID OF THE STABILITY MATRIX (GAMMA)
-	//bitsync::test();
+	bitsync::test();
 }
 
 fn test_lattice(){
