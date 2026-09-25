@@ -65,37 +65,12 @@ impl stablesync_2s{
 	}
 	fn get_id_from_num(num:usize,bs:usize)->Vec<usize>{
 		let mut new:Vec<usize>=vec![];
-		//let num:usize=31;
-		//let raw=BitVec::from_element(7_usize);
 		let raw = num.view_bits::<Lsb0>();
-		//println!("RAW {:?}",raw);
 		let len:usize=raw.len();
-		
-		//println!("BIT VEC: {:?}",bp_matrix_2usize(&bp_matrix));
-		//println!("BIT VEC BLOCK: {:?}",bp_matrix_2usize_block(&bp_matrix,5));
-		
-		
-		//println!("TEST LARGE NUMBERS BIT: {}", 340282366920938463463374600121768211455 as u128 & 20000000000000000000000 as u128);
-		
-		//340282366920938463463374607431768211455
-		
-		
-		
-		//let bits=raw.iter_ones().position(|x| x==1).unwrap();
 		let bits=raw.iter_ones();//.filter(|x| *x==1);
-		//println!("BITS ITER {:?}",bits);
-		
-		//println!("TEST BIT ITER: {}",raw.len());
-		//println!("TEST RAW ITER ONES: {:?}",raw.iter_ones().rev());
 		for bit in raw.iter_ones().rev(){
-			//print
-			//println!("bit: {}, bs: {} ",bit,bs);
-			//new.push(len-bit);
-			
 			new.push(bs-bit-1);
 		}
-		//println!();
-		//println!("GET ID NEW: {:?}",new);
 		new
 	}
 	fn create_stabm_bool(&self,adj:&Vec<Vec<[usize;2]>>,n_vec:&[usize;2])->(Vec<Vec<bool>>,Vec<usize>){
@@ -146,9 +121,7 @@ impl stablesync_2s{
 					}					
 				}
 				println!("k_bool:{:?}, stabm_ij:{:?}",k_bool,stabm_ij);
-				//if k_bool{
-					stabm.push(stabm_ij);
-				//}
+				stabm.push(stabm_ij);
 			}
 		}
 		println!("STABM SYNC_2S:");
@@ -235,25 +208,20 @@ impl stablesync_2s{
 		matches
 	}
 	fn bp_efficient2(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize)->bool{
-	//fn bp_efficient(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize) -> bool {
 		if adj[a[0]][b[1]][0]+diff<adj[a[0]][a[1]][0]{
 			println!("1. if");
 			if adj[a[0]][b[1]][1]+diff<adj[b[0]][b[1]][1]{
 				return true;
 			}
 		}
-		//else if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
 		if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
 			println!("2. if");
 			if adj[b[0]][a[1]][1]+diff<adj[a[0]][a[1]][1]{
 				return true;
 			}
 		}
-		//else{
-			println!("else");
+		println!("else");
 		return false;
-		//}
-		//true
 	}
 	fn create_del_vec_mapper(del_vec:&Vec<usize>,n:usize)->Vec<usize>{
 		let mut res:Vec<usize>=vec![];
@@ -575,26 +543,19 @@ impl stablesync_n_sided{
 	}
 	fn get_all_binvec_vec(&mut self,tmp:&Vec<usize>,cursor:usize,bitlen:usize)->Vec<Vec<usize>>{
 		let mut res:Vec<Vec<usize>>=vec![];
-		//if tmp.len()==N_SIDED{
-		//if cursor==N_SIDED{
 		if cursor==bitlen{
 			return vec![tmp.clone()];
 		}
 		else{
-			//let mut tmp0:[usize;N_SIDED]=tmp.clone();
 			let mut tmp0:Vec<usize>=tmp.clone();
-			//tmp0[cursor]=0;
 			tmp0.push(0);
 			res.append(&mut self.get_all_binvec_vec(&tmp0,cursor+1,bitlen));
-			//let mut tmp1:[usize;N_SIDED]=tmp.clone();
 			let mut tmp1:Vec<usize>=tmp.clone();
-			//tmp1[cursor]=1;
 			tmp1.push(1);
 			res.append(&mut self.get_all_binvec_vec(&tmp1,cursor+1,bitlen));
 		}
 		res
 	}		
-	//fn get_poss_bp(&self,a:&Vec<usize>,b:&Vec<usize>,binvec:&[usize;N])->[usize;N]{
 	fn get_poss_bp(&self,a:&[usize;N],b:&[usize;N],binvec:&[usize;N])->[usize;N]{
 		let mut res:[usize;N]=[0;N];
 		for i in 0..binvec.len(){
@@ -607,12 +568,8 @@ impl stablesync_n_sided{
 		}
 		res
 	}
-	//fn check_2_groups_integrity(&self,a:[usize;N],b:&[usize;N])->bool{
 	fn check_2_groups_integrity(&self,a:&Vec<usize>,b:&Vec<usize>)->bool{
-		//println!("a:{:?}, b:{:?}",a,b);
 		for i in 0..N{
-			//println!("i:{}",i);
-			//println!("a[{}]:{}, b[{}]:{}",i,a[i],i,b[i]);
 			if a[i]==b[i]{
 				return false;
 			}
@@ -702,12 +659,9 @@ impl stablesync_n_sided{
 		for i in 0..bpvec.len(){
 			bpvec_endvalues.push(self.rank.retrieve_endvalue(&bpvec[i].to_vec(),0));
 		}
-		//println!("bpvec_endvalues:\n{:?}",bpvec_endvalues);
 		let val_a:[usize;N]=self.rank.retrieve_endvalue_arr(&a,0);
 		let val_b:[usize;N]=self.rank.retrieve_endvalue_arr(&b,0);
-		//println!("val_a:{:?}, val_b:{:?}",val_a,val_b);
 		for i in 0..bpvec.len(){
-			// the last index is very important!!! the indices of binvec and bpvec_endvalues are completely shifted (by 1)!!!
 			if self.bp_compare2(&val_a,&val_b,&bpvec_endvalues[i],&binvec[i+1]){
 				return false;
 			}
@@ -734,44 +688,27 @@ impl stablesync_n_sided{
 		bs_:usize,
 		n:usize
 	)->Vec<Vec<usize>>{
-		//println!("STABLE SYNC !!!!!!!");
 		println!("sync tmp:{:?}",tmp);
 		let mut matches:Vec<Vec<usize>>=vec![];
-		//let n:usize=bp.len().isqrt();
-		
-		//if i_pos==n{
 		let mut bs:usize=bs_;
-		/*
-		if bs>n{
-			bs=n;
-		}
-		*/
-		//println!("n:{}",n);
 		if tmp.len()==n{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{			
 			let mut val_vec:Vec<usize>=vec![];			
 			for i in 0..mask.len(){												
-				//println!("mask: {}",mask[i]);
 				let val:usize=bp[i_pos][i] & mask[i];
-				//println!("val: {}",val);
 				val_vec.push(val);
 			}
 			for i in 0..val_vec.len(){
 				let val:usize=val_vec[i];				
-				//if val_vec[i]>0{
 				if val>0{
 					let next:&Vec<usize>=&self.ordervec_sync[val];
-					//println!("next {:?}",next);
 					for j in 0..next.len(){						
 						let j_pos:usize=i*bs+next[j];						
 						let mut tmp_j:Vec<usize>=tmp.clone();												
-						//tmp_j.push(next[j]);
 						tmp_j.push(j_pos);
 						let mut matches_j=self.stable_sync_bs(&bp,/*&posvec,*/val_vec.clone(),tmp_j,j_pos,bs,n);
 						matches.append(&mut matches_j);					
@@ -779,7 +716,6 @@ impl stablesync_n_sided{
 				}
 			}		
 		}
-		//println!("matches: {:?}",matches);
 		matches
 	}
 	fn get_min_val(&self,vec:&Vec<usize>,non_i:usize)->usize{
@@ -796,10 +732,7 @@ impl stablesync_n_sided{
 		}
 		minval
 	}
-	//fn check_caps(&self,i_pos:usize,cap:&Vec<Vec<Vec<usize>>>)->bool{
 	fn check_caps(&self,group:&[usize;N],cap:&Vec<Vec<Vec<usize>>>)->bool{
-		//let group:[usize;N]=Self::decompose(i_pos,&self.nvec);
-		//let mut is_ok:bool=true;
 		for i in 0..N{
 			if self.get_min_val(&cap[i][group[i]],i)==0{
 				return false;
@@ -808,7 +741,6 @@ impl stablesync_n_sided{
 		true
 	}
 	fn decrement_caps(&self,cap:&Vec<Vec<Vec<usize>>>,group:&[usize;N])->Vec<Vec<Vec<usize>>>{
-		//let mut res:Vec<Vec<Vec<usize>>>=vec![];
 		let mut res:Vec<Vec<Vec<usize>>>=cap.clone();
 		for i in 0..N{
 			for j in 0..res[i][group[i]].len(){
@@ -831,45 +763,27 @@ impl stablesync_n_sided{
 		//println!("STABLE SYNC !!!!!!!");
 		println!("sync tmp:{:?}",tmp);
 		let mut matches:Vec<Vec<usize>>=vec![];
-		//let n:usize=bp.len().isqrt();		
-		//if i_pos==n{
 		let mut bs:usize=bs_;
-		/*
-		if bs>n{
-			bs=n;
-		}
-		*/
-		//println!("n:{}",n);
-		//if tmp.len()==n{
 		if tmp.len()==self.maxn{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{			
 			let mut val_vec:Vec<usize>=vec![];			
 			for i in 0..mask.len(){												
-				//println!("mask: {}",mask[i]);
 				let val:usize=bp[i_pos][i] & mask[i];
-				//println!("val: {}",val);
 				val_vec.push(val);
 			}
 			for i in 0..val_vec.len(){
 				let val:usize=val_vec[i];				
-				//if val_vec[i]>0{
 				if val>0{
 					let next:&Vec<usize>=&self.ordervec_sync[val];
-					//println!("next {:?}",next);
 					for j in 0..next.len(){
 						let j_pos:usize=i*bs+next[j];						
-						// here comes the comparison of i & j (2 different lines!)!!!
 						let group:[usize;N]=Self::decompose(j_pos,&self.nvec);
-						//if self.check_caps(j_pos,&cap){
 						if self.check_caps(&group,&cap){
 							let mut tmp_j:Vec<usize>=tmp.clone();												
-							//tmp_j.push(next[j]);
 							tmp_j.push(j_pos);
 							// LATER: IT CAN BE IMPROVED BY REVERSING THIS OPERATION, SO WE WOULD HAVE INCREMENT AFTER DECREMENT!
 							let new_cap=self.decrement_caps(&cap,&group);						
@@ -880,43 +794,31 @@ impl stablesync_n_sided{
 				}
 			}		
 		}
-		//println!("matches: {:?}",matches);
 		matches
 	}	
 	fn stable_sync_bs_general(&self,bp:&Vec<Vec<usize>>,bs:usize,n:usize)->Vec<Vec<usize>>{
-		//println!("self.bitvec:\n{:?}",self.bitvec_sync);
-		//println!("self.boolvec:\n{:?}",self.boolvec_sync);
-		//println!("self.ordervec:\n{:?}",self.ordervec_sync);
 		let mut matches:Vec<Vec<usize>>=vec![];
-		//let n:usize=bp.len().isqrt();
 		for i in 0..bp.len()-n{			
 			let tmp:Vec<usize>=vec![i];
 			println!("BS TEST {}",i);
-			//let mut matches_i=self.stable_sync_bs(&bp,bp[i].clone(),tmp,self.capvec.clone(),i,bs,n);
 			let mut matches_i=self.stable_sync_bs_cap_matrix(&bp,bp[i].clone(),tmp,self.capvec.clone(),i,bs,n);
 			matches.append(&mut matches_i);		
 		}
 		println!("N-SIDED MATCHES STABLE SYNC BLOCKSIZE:\n{:?}",matches);
 		matches
-	}
-	
+	}	
 }
-
 pub struct bitsync{
 	
 }
 impl bitsync{
 
 	pub fn stable_sync(bp:&Vec<usize>,mask:usize,tmp:Vec<usize>,i_pos:usize,bs:usize)->Vec<Vec<usize>>{
-		//println!("STABLE SYNC !!!!!!!");
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
-		//if i_pos==n{
 		if tmp.len()==n{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{
@@ -924,40 +826,26 @@ impl bitsync{
 			let val:usize=bp[i_pos] & mask;
 			println!("val: {}",val);
 			if val>0{
-			//let next:Vec<usize>=get_id_from_num(bp[i_pos],64);
 			let next:Vec<usize>=Self::get_id_from_num(val,n*n);
 			println!("next {:?}",next);
-			for i in 0..next.len(){
-				
-							
-				let mut tmp_i:Vec<usize>=tmp.clone();
-				
-				
+			for i in 0..next.len(){				
+				let mut tmp_i:Vec<usize>=tmp.clone();								
 				tmp_i.push(next[i]);
-				
-				//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-				//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
 				let mut matches_i=Self::stable_sync(&bp,val,tmp_i,next[i],bs);
-				matches.append(&mut matches_i);
-			
+				matches.append(&mut matches_i);			
 			}
-			}
-		
+			}		
 		}
 		println!("matches: {:?}",matches);
 		matches
 	}
 	pub fn stable_sync_lattice(bp:&Vec<usize>,mask:usize,tmp:Vec<usize>,i_pos:usize,bs:usize)->Vec<Vec<usize>>{
-		//println!("STABLE SYNC !!!!!!!");
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
-		//if i_pos==n{
 		let (m_idx,w_idx)=Self::decompose_ij(i_pos,n);
 		if tmp.len()==n{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{
@@ -965,82 +853,49 @@ impl bitsync{
 			let val:usize=bp[i_pos] & mask;
 			println!("val: {}",val);
 			if val>0{
-			//let next:Vec<usize>=get_id_from_num(bp[i_pos],64);
 			let next:Vec<usize>=Self::get_id_from_num(val,n*n);
 			println!("next {:?}",next);
-			for i in 0..next.len(){
-				
+			for i in 0..next.len(){				
 				let (m_idx_i,w_idx_j)=Self::decompose_ij(next[i],n);
 				if m_idx_i <= m_idx+1{
-					let mut tmp_i:Vec<usize>=tmp.clone();
-					
-					
+					let mut tmp_i:Vec<usize>=tmp.clone();										
 					tmp_i.push(next[i]);
-					
-					//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-					//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
 					let mut matches_i=Self::stable_sync(&bp,val,tmp_i,next[i],bs);
-					matches.append(&mut matches_i);
-			
+					matches.append(&mut matches_i);			
 				}
 			}
-			}
-		
+			}		
 		}
 		println!("matches: {:?}",matches);
 		matches
 	}
 	pub fn stable_sync_bs_lattice(bp:&Vec<Vec<usize>>,mask:Vec<usize>,tmp:Vec<usize>,i_pos:usize,bs_:usize)->Vec<Vec<usize>>{
-		//println!("STABLE SYNC !!!!!!!");
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
-		//if i_pos==n{
 		let mut bs:usize=bs_;
 		let (m_idx,w_idx)=Self::decompose_ij(i_pos,n);
-		/*
-		if bs>n{
-			bs=n;
-		}
-		*/
-		
 		if tmp.len()==n{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{
 			let mut val_vec:Vec<usize>=vec![];
 			for i in 0..mask.len(){
-				
-				//println!("mask: {}",mask[i]);
 				let val:usize=bp[i_pos][i] & mask[i];
-				//println!("val: {}",val);
 				val_vec.push(val);
 			}
 			for i in 0..val_vec.len(){
 				let val:usize=val_vec[i];	
-				//if val_vec[i]>0{
 				if val>0{
-					//let next:Vec<usize>=get_id_from_num(bp[i_pos],64);
 					// REWRITE FOR BLOCKSIZE !!!!!!!
-					//let next:Vec<usize>=get_id_from_num(val,n*n);
 					let next:Vec<usize>=Self::get_id_from_num(val,bs);
-					//println!("next {:?}",next);
-					for j in 0..next.len(){
-						
-						let j_pos:usize=i*bs+next[j];
-						
+					for j in 0..next.len(){						
+						let j_pos:usize=i*bs+next[j];						
 						let (m_idx_i,w_idx_j)=Self::decompose_ij(j_pos,n);
 						if m_idx_i <= m_idx+1{
-						
 							let mut tmp_j:Vec<usize>=tmp.clone();
-							//tmp_j.push(next[j]);
 							tmp_j.push(j_pos);	
-							//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-							//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
-							//let mut matches_j=stable_sync(&bp,val_vec,tmp_j,next[j],bs);
 							let mut matches_j=Self::stable_sync_bs(&bp,val_vec.clone(),tmp_j,j_pos,bs);
 							matches.append(&mut matches_j);
 						}
@@ -1049,10 +904,8 @@ impl bitsync{
 			}
 		
 		}
-		//println!("matches: {:?}",matches);
 		matches
 	}
-
 	pub fn decompose_ij(len:usize,n:usize)->(usize,usize){
 		let mut i:usize=len/n;
 		let mut j:usize=len-i*n;
@@ -1063,62 +916,36 @@ impl bitsync{
 		//println!("STABLE SYNC !!!!!!!");
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
-		//if i_pos==n{
 		let mut bs:usize=bs_;
-		/*
-		if bs>n{
-			bs=n;
-		}
-		*/
-		
 		if tmp.len()==n{
 			println!("\nEND {:?}\n",tmp);
-			//if bp[i_pos]&mask>0{
-				matches.push(tmp);
-			//}
+			matches.push(tmp);
 			return matches;
 		}
 		else{
 			let mut val_vec:Vec<usize>=vec![];
 			for i in 0..mask.len(){
-				
-				//println!("mask: {}",mask[i]);
 				let val:usize=bp[i_pos][i] & mask[i];
-				//println!("val: {}",val);
 				val_vec.push(val);
 			}
 			for i in 0..val_vec.len(){
 				let val:usize=val_vec[i];	
-				//if val_vec[i]>0{
 				if val>0{
-					//let next:Vec<usize>=get_id_from_num(bp[i_pos],64);
 					// REWRITE FOR BLOCKSIZE !!!!!!!
-					//let next:Vec<usize>=get_id_from_num(val,n*n);
 					let next:Vec<usize>=Self::get_id_from_num(val,bs);
-					//println!("next {:?}",next);
-					for j in 0..next.len(){
-						
-						let j_pos:usize=i*bs+next[j];
-						
+					for j in 0..next.len(){						
+						let j_pos:usize=i*bs+next[j];						
 						let mut tmp_j:Vec<usize>=tmp.clone();
-						//tmp_j.push(next[j]);
 						tmp_j.push(j_pos);	
-						//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-						//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
-						//let mut matches_j=stable_sync(&bp,val_vec,tmp_j,next[j],bs);
 						let mut matches_j=Self::stable_sync_bs(&bp,val_vec.clone(),tmp_j,j_pos,bs);
-						matches.append(&mut matches_j);
-					
+						matches.append(&mut matches_j);					
 					}
 				}
 			}
-		
 		}
 		//println!("matches: {:?}",matches);
 		matches
 	}
-
-
 	pub fn stable_sync_lattice_general(bp:&Vec<usize>,bs:usize)->Vec<Vec<usize>>{
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
@@ -1130,22 +957,20 @@ impl bitsync{
 		println!("MATCHES STABLE SYNC: {:?}",matches);
 		matches
 	}
-
 	pub fn stable_sync_bs_lattice_general(bp:&Vec<Vec<usize>>,bs:usize)->Vec<Vec<usize>>{
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
-		//for i in 0..bp.len()-n{
-		for i in 0..n{
-			
+		for i in 0..n{			
 			let tmp:Vec<usize>=vec![i];
 			println!("BS TEST {}",i);
 			let mut matches_i=Self::stable_sync_bs_lattice(&bp,bp[i].clone(),tmp,i,bs);
 			matches.append(&mut matches_i);		
 		}
-		println!("MATCHES STABLE SYNC BLOCKSIZE: {:?}",matches);
+		//println!("MATCHES STABLE SYNC BLOCKSIZE: {:?}",matches);
+		let dec_matches=Self::decompose_matches(&matches,n);
+		Self::print_matches_decomposed(&dec_matches);
 		matches
 	}
-
 	pub fn stable_sync_general(bp:&Vec<usize>,bs:usize)->Vec<Vec<usize>>{
 		let mut matches:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len().isqrt();
@@ -1167,24 +992,59 @@ impl bitsync{
 			let mut matches_i=Self::stable_sync_bs(&bp,bp[i].clone(),tmp,i,bs);
 			matches.append(&mut matches_i);		
 		}
-		println!("MATCHES STABLE SYNC BLOCKSIZE: {:?}",matches);
+		//println!("MATCHES STABLE SYNC BLOCKSIZE: {:?}",matches);
+		let dec_matches=Self::decompose_matches(&matches,n);
+		Self::print_matches_decomposed(&dec_matches);
 		matches
 	}
-
+	pub fn decompose_matches(matches:&Vec<Vec<usize>>,n:usize)->Vec<Vec<[usize;2]>>{
+		let mut decomposed_matches:Vec<Vec<[usize;2]>>=vec![];
+		
+		for i in 0..matches.len(){
+			let mut match_i:Vec<[usize;2]>=vec![];
+			for j in 0..matches[i].len(){
+				let (m,w)=Self::decompose_ij(matches[i][j],n);
+				match_i.push([m,w]);
+			}
+			decomposed_matches.push(match_i);
+		}
+		decomposed_matches
+	}
+	pub fn print_matches_decomposed(matches:&Vec<Vec<[usize;2]>>){
+		println!("ALL STABLE MATCHES:");
+		for i in 0..matches.len(){
+			for j in 0..matches[i].len(){
+				let pair=Self::transform_pair_2string(matches[i][j]);
+				
+				print!("{{{},{}}}",pair.0,pair.1);
+				if j<matches.len()-1{
+					//print!(",");
+				}
+				else{
+					print!("");
+				}
+			}
+			println!();
+		}
+	}
+	pub fn transform_pair_2string(pair:[usize;2])->(String,String){
+		let mut m:String="m".to_string();
+		m+=&(pair[0]+1).to_string();
+		let mut w:String="w".to_string();
+		w+=&(pair[1]+1).to_string();
+		(m,w)
+	}
 	pub fn stable_sync_matches_ord(matches:&Vec<Vec<usize>>,resolve:Vec<usize>)->Vec<Vec<usize>>{
 		let mut new:Vec<Vec<usize>>=vec![];
-		//let mut n2:usize=0;
 		let mut n:usize=0;
 		if matches.len()>0{
 			n=matches[0].len();
-			//n=n2.isqrt();
 		}
 		for i in 0..matches.len(){
 			let mut new_i:Vec<usize>=vec![];
 			for j in 0..matches[i].len(){
 				new_i.push(n);
-			}
-			
+			}			
 			for j in 0..matches[i].len(){
 				let mut val:usize=resolve[matches[i][j]];
 				let (i_pos,j_pos)=Self::decompose_ij(val,n);
@@ -1196,7 +1056,6 @@ impl bitsync{
 		println!("SYNC MATCHES ORDERED\n:{:?}",new);
 		new
 	}
-
 	pub fn get_id_from_num(num:usize,bs:usize)->Vec<usize>{
 		let mut new:Vec<usize>=vec![];
 		//let num:usize=31;
@@ -1204,32 +1063,10 @@ impl bitsync{
 		let raw = num.view_bits::<Lsb0>();
 		//println!("RAW {:?}",raw);
 		let len:usize=raw.len();
-		
-		//println!("BIT VEC: {:?}",bp_matrix_2usize(&bp_matrix));
-		//println!("BIT VEC BLOCK: {:?}",bp_matrix_2usize_block(&bp_matrix,5));
-		
-		
-		//println!("TEST LARGE NUMBERS BIT: {}", 340282366920938463463374600121768211455 as u128 & 20000000000000000000000 as u128);
-		
-		//340282366920938463463374607431768211455
-		
-		
-		
-		//let bits=raw.iter_ones().position(|x| x==1).unwrap();
 		let bits=raw.iter_ones();//.filter(|x| *x==1);
-		//println!("BITS ITER {:?}",bits);
-		
-		//println!("TEST BIT ITER: {}",raw.len());
-		//println!("TEST RAW ITER ONES: {:?}",raw.iter_ones().rev());
 		for bit in raw.iter_ones().rev(){
-			//print
-			//println!("bit: {}, bs: {} ",bit,bs);
-			//new.push(len-bit);
-			
 			new.push(bs-bit-1);
 		}
-		//println!();
-		//println!("GET ID NEW: {:?}",new);
 		new
 	}
 	pub fn bp_matrix_2usize(bp:&Vec<Vec<bool>>)->Vec<usize>{
@@ -1251,8 +1088,7 @@ impl bitsync{
 		let mut bits:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len();
 		let sq_n:usize=n.isqrt();
-		let mut bs:usize=bs_;
-		
+		let mut bs:usize=bs_;		
 		// WHY SQUAREROOT?
 		//if bs>sq_n{
 		if bs>n{
@@ -1268,46 +1104,19 @@ impl bitsync{
 			let mut bits_i:Vec<usize>=vec![];
 			let mut i_b:usize=0;
 			for j in 0..bp[i].len(){
-				/*			
-				if j==i_b*bs && j!=0{
-					i_b+=1;
-				}
-				*/
-				if bp[i][j]{
-					//val+=(2_i32.pow((n-j-1) as u32)) as usize;
-					//println!("bs: {}, j: {}, i_b: {}, val: {}, term:",bs,j,i_b,val);
-					//println!("{}",bs+i_b*bs-1-j);
-					//val+=(2_i32.pow((bs-j+i_b*bs-1) as u32)) as usize;
-					
+				if bp[i][j]{					
 					// CHANGED i32 TO u32
-					//val+=(2_i32.pow((bs+i_b*bs-1-j) as u32)) as usize;
 					val+=(2_u32.pow((bs+i_b*bs-1-j) as u32)) as usize;
 				}
-				// RUNTIME ERROR?
-				/*
-				if j==i_b*bs-1|| j==n-1{
-					i_b+=1;
-					bits_i.push(val as usize);
-				}
-				*/
-				
 				if j==bs-1 && i_b==0{
 					i_b+=1;
 					bits_i.push(val as usize);
 					val=0;
 				}
 				else{
-					//println!("test point bp_matrix_2usize_block");
-					
 					if j<bs{
 						continue;
 					}
-					/*
-					if j>bs{
-						println!("j>bs");
-					}
-					*/
-					
 					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if j==(i_b+1)*bs-1 || j==n-1{
 						//println!("increase");
@@ -1316,23 +1125,16 @@ impl bitsync{
 						val=0;
 					}
 				}
-
-
 			}
-			//bits.push(val);
 			bits.push(bits_i);
 		}
 		bits
 	}
-
-
-
 	pub fn bp_matrix_2usize_block2(bp:&Vec<Vec<bool>>,bs_:usize)->Vec<Vec<usize>>{
 		let mut bits:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len();
 		let sq_n:usize=n.isqrt();
-		let mut bs:usize=bs_;
-		
+		let mut bs:usize=bs_;	
 		// WHY SQUAREROOT?
 		//if bs>sq_n{
 		if bs>n{
@@ -1348,70 +1150,28 @@ impl bitsync{
 			let mut bits_i:Vec<usize>=vec![];
 			let mut i_b:usize=0;
 			for j in 0..bp[i].len(){
-				/*			
-				if j==i_b*bs && j!=0{
-					i_b+=1;
-				}
-				*/
 				if bp[i][j]{
-					//val+=(2_i32.pow((n-j-1) as u32)) as usize;
-					//println!("bs: {}, j: {}, i_b: {}, val: {}, term:",bs,j,i_b,val);
-					//println!("{}",bs+i_b*bs-1-j);
-					//val+=(2_i32.pow((bs-j+i_b*bs-1) as u32)) as usize;
-					
 					// CHANGED i32 TO u32
-					//val+=(2_i32.pow((bs+i_b*bs-1-j) as u32)) as usize;
-					
-					//println!("test point");
-					
 					// CHANGED FROM I32 TO U32 TO USIZE TO U128 !!!!!!! WORKS !!!!!!!
-					
-					//val+=(2_u32.pow((bs+i_b*bs-1-j) as u32)) as usize;
-					//val+=(2_usize.pow((bs+i_b*bs-1-j) as u32)) as usize;
 					val+=(2_u128.pow((bs+i_b*bs-1-j) as u32)) as usize;
-				}
-				// RUNTIME ERROR?
-				/*
-				if j==i_b*bs-1|| j==n-1{
-					i_b+=1;
-					bits_i.push(val as usize);
-				}
-				*/
-				
+				}				
 				if j==bs-1 && i_b==0{
 					i_b+=1;
 					bits_i.push(val as usize);
 					val=0;
 				}
-				else{
-					//println!("test point bp_matrix_2usize_block");
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					
+				else{					
 					if j<bs{
 						continue;
 					}
-					
-					/*
-					if j>=bs{
-						println!("j>bs");
-					}
-					*/
-					
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					
 					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if (j==(i_b+1)*bs-1) || (j==n-1){
-						//println!("increase");
 						i_b+=1;
 						bits_i.push(val as usize);
 						val=0;
 					}
 				}
-
-
 			}
-			//bits.push(val);
 			bits.push(bits_i);
 		}
 		bits
