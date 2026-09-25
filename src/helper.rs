@@ -580,6 +580,50 @@ impl IOClass{
 		}	
 		return false;
 	}	
+	pub fn decompose_matches(matches:&Vec<Vec<usize>>,n:usize)->Vec<Vec<[usize;2]>>{
+		let mut decomposed_matches:Vec<Vec<[usize;2]>>=vec![];
+		
+		for i in 0..matches.len(){
+			let mut match_i:Vec<[usize;2]>=vec![];
+			for j in 0..matches[i].len(){
+				let (m,w)=Self::decompose_ij(matches[i][j],n);
+				match_i.push([m,w]);
+			}
+			decomposed_matches.push(match_i);
+		}
+		decomposed_matches
+	}
+	pub fn decompose_ij(len:usize,n:usize)->(usize,usize){
+		let mut i:usize=len/n;
+		let mut j:usize=len-i*n;
+		println!("len: {}, n: {}, i: {}, j: {}",len,n,i,j);
+		(i,j)
+	}
+	pub fn print_matches_decomposed(matches:&Vec<Vec<[usize;2]>>){
+		println!("ALL STABLE MATCHES:");
+		for i in 0..matches.len(){
+			for j in 0..matches[i].len(){
+				let pair=Self::transform_pair_2string(matches[i][j]);
+				
+				print!("{{{},{}}}",pair.0,pair.1);
+				if j<matches.len()-1{
+					//print!(",");
+				}
+				else{
+					print!("");
+				}
+			}
+			println!();
+		}
+	}
+	pub fn transform_pair_2string(pair:[usize;2])->(String,String){
+		let mut m:String="m".to_string();
+		m+=&(pair[0]+1).to_string();
+		let mut w:String="w".to_string();
+		w+=&(pair[1]+1).to_string();
+		(m,w)
+	}
+
 }
 pub struct Generate{
 	
