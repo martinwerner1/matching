@@ -1704,7 +1704,7 @@ impl n_sided_matching {
 				}
 			}
 		}
-		dbg!(&adj);
+		//dbg!(&adj);
 		self.adj=adj;		
 	}
 	
