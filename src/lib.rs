@@ -13,3 +13,4 @@ pub mod matchref;
 
 pub mod bitsync;
 pub mod deep_search;
+pub mod N_sided_matching;
