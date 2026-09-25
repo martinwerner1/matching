@@ -26,7 +26,7 @@ This project is tested under Linux and Windows systems: Debian/Fedora and Window
 
 Please note that this is an ongoing project and it will be updated regularly. If anything is not working as desired, please be patient and have a short lookup after a couple of days or a week. The code will be steadily improved from time to time.
 
-In the upcoming days, more code will be uploaded that has not been uploaded yet. So have a watch on this project and everything will be fine! :)
+In the upcoming days, more code will be uploaded that has not been uploaded yet, especially with respect to N-sided matching. So have a watch on this project and everything will be fine! :)
 
 You can contact me via mwerner6@smail.uni-koeln.de
 
