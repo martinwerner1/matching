@@ -140,8 +140,6 @@ impl gale_shapley{
 				}
 			}
 		}
-		// WRONG! IT DEPICTS JUST wtmp, not mtmp!
-		//self.matchres=Some(self.wtmp.clone());
 		self.matchres=Some(Self::traverse_wtmp(&self.wtmp.clone()));
 	}
 	pub fn traverse_wtmp(wtmp:&Vec<usize>)->Vec<usize>{
