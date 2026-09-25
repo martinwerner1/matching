@@ -282,18 +282,11 @@ fn print_nodenames_men_side(){
 
 	}
 }
-
-
-
-
-
-
 fn print_nodenames_horizontal_men_side(){
 	let xstart:f64=0.0;
 	let ystart:f64=16.7;
 	let xfactor:f64=1.0;
 	let yfactor:f64=0.7;
-
 	let ny:usize=5;
 	let nx:usize=7;
 	for i in 0..nx{
@@ -366,10 +359,6 @@ fn display_1st_a(xshift:usize){
 		}
 	}
 }
-
-
-
-
 fn display_2nd_a(xshift:usize){
 	let ny:usize=5;
 	let nx:usize=7;
@@ -613,7 +602,6 @@ fn draw_graph(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[u
 	}
 
 }
-
 //fn draw_graph(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>){
 fn draw_graph2(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[usize;2];2]>,colmode:&[usize;2]){
 	//let ny:usize=v.len();
@@ -676,13 +664,7 @@ fn draw_graph2(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[
 			let secon:[usize;2]=dashed[i][1];
 			println!("\\ncline[linecolor=red,linestyle=dotted]{{w{}{}}}{{w{}{}}}",first[0],first[1],secon[0],secon[1]);
 	}
-
 }
-
-
-
-
-
 //fn draw_graph(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>){
 fn draw_graph3(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[usize;2];2]>,colmode:&[usize;2],xshift:f64,yshift:f64,grouplabel:String){
 	//let ny:usize=v.len();
@@ -746,23 +728,7 @@ fn draw_graph3(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[
 			let secon:[usize;2]=dashed[i][1];
 			println!("\\ncline[linecolor=red,linestyle=dotted]{{{}_{}{}}}{{{}_{}{}}}",grouplabel,first[0],first[1],grouplabel,secon[0],secon[1]);
 	}
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 fn draw_graph_diff_two(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed:&Vec<[[usize;2];2]>){
 	//let ny:usize=v.len();
 	//let nx:usize=v[0].len();
@@ -809,7 +775,6 @@ fn draw_graph_diff_two(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>,mode:usize,dashed
 	}
 
 }
-
 fn pref_display(pref:&Vec<Vec<usize>>,mode:usize){
 	let n:usize=pref.len();
 	let pattern:Vec<&str>=vec!["m","w","d"];
@@ -863,9 +828,7 @@ fn get_dim_by_edges(e:&Vec<[[usize;2];2]>)->(usize,usize){
 		if e[i][1][1]>ny{
 			ny=e[i][1][1];
 		}
-
 	}
-	
 	(ny+1,nx+1)
 }
 //fn edges_matrix(v:&Vec<[usize;2]>,e:&Vec<[[usize;2];2]>)->Vec<Vec<[[usize;2];2]>>{
@@ -895,7 +858,6 @@ pub fn get_diff2_edge_matrix(edm:&Vec<Vec<[[usize;2];2]>>,diff_mod:usize)->Vec<V
 	}
 	edm2
 }
-
 pub fn edm_2_edgevec(edm:&Vec<Vec<[[usize;2];2]>>)->Vec<[[usize;2];2]>{
 	let mut vec:Vec<[[usize;2];2]>=vec![];
 	for i in 0..edm.len(){
@@ -1104,7 +1066,6 @@ fn sort_edges(e:&Vec<[[usize;2];2]>)->(Vec<[[usize;2];2]>,Vec<[[usize;2];2]>){
 			edges.remove(pos);
 		}
 	}
-
 	edges_reddotted=delete_for_dashed.clone();
 	(edges,edges_reddotted)
 }
@@ -1183,7 +1144,6 @@ fn sort_edges2(e:&Vec<[[usize;2];2]>)->(Vec<Vec<[[usize;2];2]>>,Vec<Vec<[[usize;
 	//(edges,edges_reddotted)
 	(edm,delete_for_dashed2)
 }
-
 //fn sort_edges3(e:&Vec<[[usize;2];2]>,start:usize,end:usize)->(Vec<Vec<[[usize;2];2]>>,Vec<Vec<[[usize;2];2]>>){
 fn sort_edges3(edm_:&Vec<Vec<[[usize;2];2]>>,start:usize,end:usize)->(Vec<Vec<[[usize;2];2]>>,Vec<Vec<[[usize;2];2]>>){
 	//let (nx,ny)=get_dim_by_edges(&e);
@@ -1258,8 +1218,6 @@ fn sort_edges3(edm_:&Vec<Vec<[[usize;2];2]>>,start:usize,end:usize)->(Vec<Vec<[[
 	}
 	(edm,delete_for_dashed2)
 }
-
-
 pub fn print_edges(e:&Vec<[[usize;2];2]>){
 	println!("PRINT EDGES");
 	for i in 0..e.len(){
