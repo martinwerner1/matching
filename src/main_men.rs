@@ -17,17 +17,9 @@ fn display(){
 			let nodename:String=format!("m{}{}",j+1,ny-i).to_string();
 			let xcoord:f64=j as f64*xfactor;
 			println!("\\Cnode({:2},{:2}){{{}}}",xcoord,ycoord,nodename);
-			
-			//println!("\\Cnode({:2},{:2}){{{}}}\\rput({},{}){{{}}}",xcoord,ycoord,nodename,xcoord,ycoord,nodename);
-
 		}
 	}
 }
-
-
-
-
-
 fn display_1st_a(){
 	let ny:usize=5;
 	let nx:usize=6;
@@ -46,10 +38,6 @@ fn display_1st_a(){
 		}
 	}
 }
-
-
-
-
 fn display_2nd_a(){
 	let ny:usize=5;
 	let nx:usize=7;
@@ -82,7 +70,6 @@ fn display_2nd_b(){
 				let nodename:String=format!("m{}{}",j+1,ny-i+10).to_string();
 				let xcoord:f64=j as f64*xfactor;
 				println!("\\Cnode({:2},{:2}){{{}}}",xcoord,ycoord,nodename);
-				//println!("\\Cnode({:2},{:2}){{{}}}\\rput({},{}){{{}}}",xcoord,ycoord,nodename,xcoord,ycoord,nodename);
 			}
 		}
 	}
