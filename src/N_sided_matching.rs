@@ -37,6 +37,7 @@ fn main(){
 pub fn test_deepsearch_n_sided(){
 	let mut n_sided:n_sided_matching=n_sided_matching::new();
 	n_sided.init(3);
+	println!("\n##########################################################\n");
 	n_sided.show_pref();
 	//let mut chain:Vec<[usize;N]>=vec![[0,1,2],[2,3,1]];
 	//let b:[usize;N]=[1,2,3];
@@ -58,16 +59,18 @@ pub fn test_deepsearch_n_sided(){
 	//n_sided.lp_rustplex_run(); // COMMENTED!
 	//n_sided.lp_dual_lp_highs_run(); // COMMENTED!
 	
-	
-	println!("DEEP SEARCH N-SIDED (with random preference lists)!");
+	// preliminary, correct it later!
+	let n:usize=n_sided.nvec[0];
+	println!("##########################################################\n");
+	println!("N-SIDED MATCHING (N={}, n={} with random preference lists)!\n",N,n);
 	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
 	let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
-	println!("MATCHES DEEP SEARCH:");
+	println!("ALL STABLE MATCHES:");
 	//for i in 0..matches_deepsearch.len(){
 	for i in 0..matches_clean.len(){
 		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
 		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
-		println!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
+		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
 	}
 	
 }
