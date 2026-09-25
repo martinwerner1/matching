@@ -11,28 +11,43 @@ use display::bitsync;
 use display::deep_search;
 
 fn main(){
-	//print_node_coord();
 
-	////print_nodenames_all();
-	////test_lattice();
+	// CREATE LATEX CODE FOR ILLUSTRATION OF VERTEX DELETION MECHANISM, PACKAGE:PSTRICKS
+	//test_edges_bp4();
 
-
-	//test_edges_bp2();
-	////test_edges_bp4();
+	// LINEAR PROGRAMMING
 	//test_lp();
-	//node_deletion::tests();
-	////let bp:Vec<Vec<bool>>=IOClass::get_bp_automatically();
-	// PSGRID FOR STABILITY MATRIX SUCCESSFUL!
-	////tex::psgrid_test(&bp);
 	
+	// VERTEX DELETION MECHANISM FOR REMOVING UNSTABLE PAIRS
+	//node_deletion::tests();
+	
+	// CREATE LATEX CODE FOR STABILITY MATRIX (PACKAGE:PSTRICKS), UNCOMMENT BOTH LINES FOR USAGE
+	//let bp:Vec<Vec<bool>>=IOClass::get_bp_automatically();
+	//tex::psgrid_test(&bp);
+	
+	// GS ALGORITHM WITH GS REDUCED LISTS
 	//gale_shapley::test();
+	
+	// CREATE LATEX CODE FOR COALITION, PACKAGE: PSTRICKS
 	//image_coalition::test();
+
+	// DISPLAY OF THE LATTICE STRUCTURE AT GIVEN SAMPLE
 	//lattice_display::test();
+	
+	// LATTICE MATCHING, DEBUG-PHASE
 	//lattice_matching::test();
+	
+	// MATCHREGF ALGORITHM WITH REFERENCE/SMART POINTER
 	//matchref::matchref_run();
+	
+	// MATCHREF ALGORITHM WITH HASH VALUES
 	//matchref::test_hashmatch();
+	
+	// DEEPSEARCH FOR MANY-TO-MANY MATCHING, UNDER CONSTRUCTION!
 	//deep_search::test();
-	bitsync::test();
+	
+	// BITSYNC ALGORITHM, IT OUTPUTS THE ROW ID OF THE STABILITY MATRIX (GAMMA)
+	//bitsync::test();
 }
 
 fn test_lattice(){
