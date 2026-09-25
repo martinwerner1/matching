@@ -24,7 +24,7 @@ This project is tested under Linux and Windows systems: Debian/Fedora and Window
 
 ####### ADDITIONAL REMARKS #######
 
-Please note that this is an ongoing project and will be updated regularly. If anything is not working as desired, please be patient and have a short lookup after a couple of days or a week. The code will be steadily improved from time to time.
+Please note that this is an ongoing project and it will be updated regularly. If anything is not working as desired, please be patient and have a short lookup after a couple of days or a week. The code will be steadily improved from time to time.
 
 You can contact me via mwerner6@smail.uni-koeln.de
 
