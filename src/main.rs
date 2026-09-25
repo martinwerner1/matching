@@ -12,6 +12,9 @@ use display::deep_search;
 
 fn main(){
 
+	// N-SIDED MATCHING BASED ON INTERSECTION METHOD, RANDOM PREFERENCES
+	N_sided_matching::test_deepsearch_n_sided();
+
 	// CREATE LATEX CODE FOR ILLUSTRATION OF VERTEX DELETION MECHANISM, PACKAGE:PSTRICKS
 	//test_edges_bp4();
 
@@ -34,7 +37,10 @@ fn main(){
 	// DISPLAY OF THE LATTICE STRUCTURE AT GIVEN SAMPLE
 	//lattice_display::test();
 	
-	// MATCHREF ALGORITHM WITH REFERENCE/SMART POINTER
+	// LATTICE MATCHING, DEBUG-PHASE
+	//lattice_matching::test();
+	
+	// MATCHREGF ALGORITHM WITH REFERENCE/SMART POINTER
 	//matchref::matchref_run();
 	
 	// LATTICE MATCHING ALGORITHM WITH HASH VALUES
@@ -44,7 +50,7 @@ fn main(){
 	//deep_search::test();
 	
 	// BITSYNC ALGORITHM, IT OUTPUTS THE ROW ID OF THE STABILITY MATRIX (GAMMA)
-	bitsync::test();
+	//bitsync::test();
 }
 
 fn test_lattice(){
@@ -57,6 +63,8 @@ fn test_lp(){
 	let mut lp:one2one=one2one::init();
 	lp.update();
 	lp.run_lp();
+	
+	/*
 	let lpmatch:Vec<usize>=lp.lp_go();
 	let allbits=one2one::get_all_bits(&vec![],0,4);
 	println!("ALLBITS\n{:?}",allbits);
@@ -78,6 +86,7 @@ fn test_lp(){
 	//println!("####### A_LE VEC: {:?}",A_le_vec);
 	//println!("####### CHECK VEC: {:?}",check_vec);
 	println!("MATCH RESULT MANY2ONE LP\n{:?}",resultLP);
+	*/
 }
 
 
