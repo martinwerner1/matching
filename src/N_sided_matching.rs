@@ -59,14 +59,15 @@ pub fn test_deepsearch_n_sided(){
 	//n_sided.lp_dual_lp_highs_run(); // COMMENTED!
 	
 	
-	println!("DEEP SEARCH N-SIDED!");
+	println!("DEEP SEARCH N-SIDED (with random preference lists)!");
 	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
 	let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
 	println!("MATCHES DEEP SEARCH:");
 	//for i in 0..matches_deepsearch.len(){
 	for i in 0..matches_clean.len(){
 		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
-		println!("MATCH {}: {:?}",i+1,matches_clean[i]);
+		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
+		println!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
 	}
 	
 }
@@ -760,13 +761,54 @@ impl n_sided_matching {
 		pref
 	}
 	fn show_pref(&self){
+		let agent:[&str;26]=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+		let sets:[&str;26]=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+
 		println!("SHOW PREFERENCE TABLES");
 		for i in 0..self.pref.len(){
-			println!("PREFERENCE OF {}",i);
+			//println!("PREFERENCES OF SET {}",i+1);
+			println!("PREFERENCES OF SET << {} >>",sets[i].to_string());
 			for j in 0..self.pref[i].len(){
-				println!("{:?}",self.pref[i][j]);
+				let mut agent_ij:String=agent[i].to_string();
+				agent_ij+=&(j+1).to_string();
+				//println!("AGENT {}: {:?}",j+1,self.pref[i][j]);
+				//println!("AGENT {}: {}",j+1,self.transform_coalition_2string(&self.pref[i][j]));
+				//println!("AGENT {}: {}",j+1,self.transform_match_2string(&self.pref[i][j]));
+				println!("AGENT {}: {}",agent_ij,self.transform_match_2string(&self.pref[i][j]));
 			}
 		}
+	}
+	fn transform_match_2string(&self,vecmatch:&Vec<[usize;N]>)->String{
+		let mut txt:String="".to_string();
+		for i in 0..vecmatch.len(){
+			txt+=&self.transform_coalition_2string(&vecmatch[i]);
+			if i<vecmatch.len()-1{
+				txt+=", ";
+			}
+		}
+		txt+="\n";
+		txt
+	}
+	fn transform_coalition_2string(&self,coalition:&[usize;N])->String{
+		let pattern:[&str;52]=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+		//let mut pattern_string:[String;52]=["".to_string();52];
+		for i in 0..52{
+			//pattern_string[i]=pattern[i].to_string();
+		}
+		if N>52{
+			println!("N IS TOO LARGE FOR HAVING AN OUTPUT VIA LETTERS");
+		}
+		let mut txt:String="{".to_string();
+		for i in 0..coalition.len(){
+			txt+=&pattern[i].to_string();
+			txt+=&(coalition[i]+1).to_string();
+			if i<coalition.len()-1{
+				txt+=", ";
+			}
+		}
+		txt+="}";
+		txt
+		
 	}
 	// WRONG!
 	// BE VERY CAREFUL !!!!!!!
