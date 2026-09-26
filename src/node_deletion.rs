@@ -67,14 +67,6 @@ fn transform_bp_gender(bp:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 	}
 	new_bp
 }
-
-
-
-
-
-
-
-
 pub fn bp_matrix_for_women(bp:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 	let mut wbp:Vec<Vec<bool>>=vec![];
 	let n:usize=bp.len().isqrt();
@@ -114,7 +106,6 @@ fn clear_bp(bp_:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 	}
 	bp_tmp
 }
-
 pub fn get_nodes_idx(bp:&Vec<Vec<bool>>)->Vec<usize>{
 	let mut nodes_idx:Vec<usize>=vec![];
 	for i in 0..bp.len(){
