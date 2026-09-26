@@ -30,9 +30,6 @@ fn main(){
 	
 	// GS ALGORITHM WITH GS REDUCED LISTS
 	//gale_shapley::test();
-
-	// DISPLAY OF THE LATTICE STRUCTURE AT GIVEN SAMPLE
-	//lattice_display::test();
 	
 	// MATCHREF ALGORITHM WITH REFERENCE/SMART POINTER
 	//matchref::matchref_run();
