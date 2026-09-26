@@ -3,8 +3,8 @@
 Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching
 
 
-INSTRUCTIONS:
-#############
+INSTRUCTIONS
+############
 
 1. Please install the Rust programming language, see rustup: 
 https://rustup.rs/
