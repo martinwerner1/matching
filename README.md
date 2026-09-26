@@ -1,4 +1,4 @@
-# README FOR MATCHING #
+# TWO-SIDED & N-SIDED MATCHING #
 
 - Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching -
 
