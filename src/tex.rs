@@ -23,14 +23,6 @@ fn ps_grid_from_bp(bp:&Vec<Vec<bool>>,half:bool){
 	let mut psgrid:PSGrid=PSGrid::init(&bp_half,7.0);
 	//psgrid.put_shift(7.0,0.0);
 	psgrid.get_grid3();
-	
-	
-	
-	
-	
-	
-	
-	
 	/*
 	println!("PSGRID FOR WOMEN!");
 	let bpw=node_deletion::bp_matrix_for_women(&bp);
@@ -40,7 +32,6 @@ fn ps_grid_from_bp(bp:&Vec<Vec<bool>>,half:bool){
 	psgridw.get_grid();
 	*/
 	//println!("OPACITY!");
-	
 	
 	// COMMENTED TO HOLD EVERYTHING AS COMPACT AS POSSIBLE!
 	/*
