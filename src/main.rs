@@ -30,9 +30,6 @@ fn main(){
 	
 	// GS ALGORITHM WITH GS REDUCED LISTS
 	//gale_shapley::test();
-	
-	// CREATE LATEX CODE FOR COALITION, PACKAGE: PSTRICKS
-	//image_coalition::test();
 
 	// DISPLAY OF THE LATTICE STRUCTURE AT GIVEN SAMPLE
 	//lattice_display::test();
