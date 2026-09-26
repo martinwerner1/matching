@@ -86,7 +86,7 @@ impl many2one{
 			self.st.push(lastst);
 		//}
 		//else{
-			// ???????
+			// 
 		//}
 		self.qu_sc.push(1);
 		self.qu_st.push(1);
@@ -127,7 +127,7 @@ impl many2one{
 			self.m.push(lastst);
 		//}
 		//else{
-			// ???????
+			// 
 		//}
 		//self.qu_sc.push(1);
 		self.quota.push(1);
