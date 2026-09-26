@@ -1,6 +1,6 @@
-####### README FOR MATCHING #######
+# README FOR MATCHING #
 
-####### Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching #######
+- Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching -
 
 1. Please install the Rust programming language, see rustup: 
 https://rustup.rs/
