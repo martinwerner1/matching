@@ -1,6 +1,10 @@
 # TWO-SIDED & N-SIDED MATCHING #
 
-- Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching -
+Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching
+
+
+INSTRUCTIONS:
+#############
 
 1. Please install the Rust programming language, see rustup: 
 https://rustup.rs/
@@ -22,7 +26,9 @@ This program is located in the subfolder: ./target/release/
 
 This project was tested under Linux and Windows systems: Debian/Fedora and Windows 10/11
 
-####### ADDITIONAL REMARKS #######
+
+ADDITIONAL REMARKS
+##################
 
 Please note that this is an ongoing project and it will be updated regularly. If anything is not working as desired, please be patient and have a short lookup after a couple of days or a week. The code will be steadily improved from time to time.
 
