@@ -4,22 +4,25 @@ use super::node_deletion;
 
 
 
-pub fn psgrid_test(bp:&Vec<Vec<bool>>){
-	ps_grid_from_bp(&bp);
+pub fn psgrid_test(bp:&Vec<Vec<bool>>,half:bool){
+	ps_grid_from_bp(&bp,half);
 }
 
 
-fn ps_grid_from_bp(bp:&Vec<Vec<bool>>){
+fn ps_grid_from_bp(bp:&Vec<Vec<bool>>,half:bool){
 	let mut txt:&str="\\begin{pspicture}\n";
-	let bp_half=IOClass::bp_matrix_half(&bp);
-	println!("BP MATRIX HALF!");
+	let mut bp_half=bp.clone();
+	if half{
+		bp_half=IOClass::bp_matrix_half(&bp);
+	}
+	//println!("BP MATRIX HALF!");
 	for i in 0..bp_half.len(){
-		println!("{:?}",bp_half[i]);
+		//println!("{:?}",bp_half[i]);
 	}
 	//let mut psgrid:PSGrid=PSGrid::init(&bp,5.8);
 	let mut psgrid:PSGrid=PSGrid::init(&bp_half,7.0);
 	//psgrid.put_shift(7.0,0.0);
-	psgrid.get_grid2();
+	psgrid.get_grid3();
 	
 	
 	
@@ -38,6 +41,9 @@ fn ps_grid_from_bp(bp:&Vec<Vec<bool>>){
 	*/
 	//println!("OPACITY!");
 	
+	
+	// COMMENTED TO HOLD EVERYTHING AS COMPACT AS POSSIBLE!
+	/*
 	psgrid.get_opacity_line_oc(7);
 	psgrid.get_opacity_col_oc(7);
 	psgrid.fill_cell(7,7,"green".to_string());
@@ -51,18 +57,10 @@ fn ps_grid_from_bp(bp:&Vec<Vec<bool>>){
 	psgrid.fill_cell(15,7,"green".to_string());
 	psgrid.fill_cell(18,7,"green".to_string());
 	psgrid.fill_cell(20,7,"green".to_string());
+	*/
+	
 	//println!("{}",txt);
 }
-
-
-
-
-
-
-
-
-
-
 pub struct PSGrid{
 	bp:Vec<Vec<bool>>,
 	empty_vertices:Vec<([usize;2],usize)>,
@@ -200,11 +198,60 @@ impl PSGrid{
 		println!("{}",txt);
 	}
 
-	pub fn fill_cell(&self,i:usize,j:usize,color:String){
+	pub fn get_grid3(&self){
+		//let ev=self.empty_vertices.clone();
+		let mut txt:String=format!("\\documentclass{{article}}\n\\usepackage{{pstricks,pstricks-add,pst-pdf}}\n\\begin{{document}}\n\\begin{{pspicture}}({},{})\n",self.size,self.size).to_string();
+		// COMMENTED!
+		txt+="\\definecolor{grey}{rgb}{0.7,0.7,0.7}";
+
+		let pattern:Vec<String>=vec!["m".to_string(),"w".to_string()];
+		
+		let diff:f64=self.unit/self.n;
+		let n:usize=self.n as usize;
+		for i in 0..self.bp.len(){
+			for j in 0..self.bp[i].len(){
+				if self.bp[i][j]{
+					txt+=&self.fill_cell(j,i,"grey".to_string());
+				}
+			}
+		}
+
+		txt+=&format!("\\psgrid[gridcolor=black,gridwidth=2.5pt,unit={}cm,subgriddiv={}]({},{})({},{})\n",self.size as f64/self.n,self.n,0,0,self.n,self.n);
+		/*
+		for i in 0..ev.len(){
+			let (data,col)=ev[i];
+			let line:usize=data[0]*n+data[1];
+			txt+=&format!("\\psframe[linecolor=red,linewidth={}cm,dimen=inner]({},{})({},{})\n",self.linewidth/n as f64,(col*n) as f64*diff,(n*n-line) as f64*diff,((col+1)*n) as f64*diff,(n*n-line-1) as f64*diff);
+			
+		}
+		*/
+		
+		/*
+		// COMMENTED FOR HOLDING A STABILITY MATRIX WITHOUT ANY ADDITIONAL MARKERS
+		// horizontal
+		for i in 0..n{
+			txt+=&format!("\\rput({},{}){{${}_{}$}}",i as f64*self.unit+0.5*self.unit-(self.unit*n as f64),(n as f64+0.5)*self.unit,pattern[self.gender],i+1);
+		}
+		txt+="\n";
+		// vertical
+		for i in 0..n{
+			//txt+=&format!("\\rput({},{}){{${}_{}$}}",-0.5*self.unit-(self.unit*n as f64),(n as f64-(i as f64+0.5))*self.unit-(n as f64*self.unit),pattern[self.gender],i+1);
+			txt+=&format!("\\rput({},{}){{${}_{}$}}",-0.5*self.unit-(self.unit*n as f64),(n as f64-(i as f64+0.5))*self.unit,pattern[self.gender],i+1);
+			
+		}
+		txt+="\n";
+		*/
+		
+		txt+="\\end{pspicture}\n\\end{document}\n";
+		println!("{}",txt);
+	}
+
+	pub fn fill_cell(&self,i:usize,j:usize,color:String)->String{
 		let diff:f64=self.unit/self.n;
 		let n:usize=self.n as usize;
 		let mut txt:String=format!("\\psframe*[linecolor={}]({},{})({},{})\n",color,i as f64*diff,(n*n-j) as f64*diff,(i+1) as f64*diff,(n*n-j-1) as f64*diff);
-		println!("{}",txt);
+		//println!("{}",txt);
+		txt
 	}
 	pub fn get_opacity_line(&self,line:usize){
 		let diff:f64=self.unit/self.n;
