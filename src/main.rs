@@ -13,7 +13,7 @@ use display::deep_search;
 fn main(){
 
 	// N-SIDED MATCHING BASED ON INTERSECTION METHOD, RANDOM PREFERENCES
-	//N_sided_matching::test_deepsearch_n_sided();
+	N_sided_matching::test_deepsearch_n_sided();
 
 	// CREATE LATEX CODE FOR ILLUSTRATION OF VERTEX DELETION MECHANISM, PACKAGE:PSTRICKS
 	//test_edges_bp4();
@@ -25,8 +25,8 @@ fn main(){
 	//node_deletion::tests();
 	
 	// CREATE LATEX CODE FOR STABILITY MATRIX (PACKAGE:PSTRICKS), UNCOMMENT BOTH LINES FOR USAGE
-	let bp:Vec<Vec<bool>>=IOClass::get_bp_automatically();
-	tex::psgrid_test(&bp,false); // second parameter -> false: full stability matrix, true: upper half of stability matrix (needed for bitsync)
+	//let bp:Vec<Vec<bool>>=IOClass::get_bp_automatically();
+	//tex::psgrid_test(&bp,false); // second parameter -> false: full stability matrix, true: upper half of stability matrix (needed for bitsync)
 	
 	// GS ALGORITHM WITH GS REDUCED LISTS
 	//gale_shapley::test();
