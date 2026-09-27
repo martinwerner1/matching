@@ -10,12 +10,18 @@ use display::matchref;
 use display::bitsync;
 use display::deep_search;
 use display::vdm_edges;
+use display::manyone;
 
 fn main(){
 
 	// N-SIDED MATCHING BASED ON INTERSECTION METHOD, RANDOM PREFERENCES
 	N_sided_matching::test_deepsearch_n_sided();
 
+
+	
+	// ALL STABLE MATCHES IN MANY-TO-ONE MATCHING (GUSFIELD/IRVING EXAMPLE)
+	manyone::test_manyone_enumeration();
+	
 	// LINEAR PROGRAMMING
 	//test_lp();
 	
