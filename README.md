@@ -21,6 +21,8 @@ cargo build --release
 
 This program is located in the subfolder: ./target/release/
 
+(After successfully compiling the release version of this program, please copy the program file from ./target/release to the main folder ./ in order to preserve the folder consistency (pref,manyone_pref etc.)!)
+
 5. For trying several algorithms, please go into the src/main.rs file and uncomment/comment some test lines within the function "fn main()" by removing "//"!
 
 This project was tested under Linux and Windows systems: Debian/Fedora and Windows 10/11
