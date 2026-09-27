@@ -55,19 +55,6 @@ impl lattice{
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct chain{
 	hash:usize,
 	head:usize,
