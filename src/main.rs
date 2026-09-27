@@ -20,7 +20,7 @@ fn main(){
 
 	
 	// ALL STABLE MATCHES IN MANY-TO-ONE MATCHING (GUSFIELD/IRVING EXAMPLE)
-	manyone::test_manyone_enumeration();
+	//manyone::test_manyone_enumeration();
 	
 	// LINEAR PROGRAMMING
 	//test_lp();
