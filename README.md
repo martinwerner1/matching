@@ -12,7 +12,7 @@ This project comprises the following algorithms:
 - Lattice matching with hash values (one-to-one, all stable outcomes, slow mode)
 - Vertex deletion mechanism (reduction via stability matrix, a fast approach (object-oriented network) is still under construction)
 - Linear programming (one-to-one, many-to-one, all outcomes for one-to-one)
-- GS algorithm with GS reduced lists
+- Gale-Shapley algorithm with GS reduced lists
 - DA algorithm for many-to-many matching
 
 Algorithms that are still under construction:
