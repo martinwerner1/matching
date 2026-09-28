@@ -31,16 +31,11 @@ pub fn test_gusfield_manymany(){
 	let qu_sc:Vec<usize>=gf_mo.qu_sc.clone();
 	let qu_st:Vec<usize>=gf_mo.qu_st.clone();
 	let mtmp=gf_mo.create_full_mtmp();
-	//let wtmp=gf_mo.create_empty_wtmp();
 	let wtmp:Vec<Vec<usize>>=vec![vec![];st.len()];
-	//gusfield_manyone::get_posets2(&sc,&st,&vec![],&vec![],&vec![0;st.len()],0);
 	// student proposing works! take care of the files! swap if necessary!
-	//gusfield_manymany::get_posets(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()],0);
 	
 	// iterate proposals until capacities of proposers are full!
-	//gusfield_manymany::get_posets_iter2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()]);
 	let rmatch=gusfield_manymany::get_posets_iter4(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()]);
-	//println!("MANY-TO-MANY MATCHING:\n{:?}",rmatch);
 	println!("\nMANY-TO-MANY MATCHING:\nProposer-stable outcome:\n");
 	let match_string:String=gusfield_manymany::transform_manymany_matches_2string(&rmatch);
 	println!("{}",match_string);
