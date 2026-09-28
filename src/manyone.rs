@@ -19,11 +19,11 @@ pub fn test_manyone_enumeration(){
 	gf_mm.manyone_wrapper();
 }
 
-fn test_gusfield_manymany(){
+pub fn test_gusfield_manymany(){
 	let mut gf_mo:gusfield_manymany=gusfield_manymany::init();
 	let (is_ok,scxlen,stxlen)=gf_mo.check_list_consistency();
 	gf_mo.show_lists();
-	println!("consistent: {}, sc_xlen:{}, st_xlen:{}",is_ok,scxlen,stxlen);
+	//println!("consistent: {}, sc_xlen:{}, st_xlen:{}",is_ok,scxlen,stxlen);
 	gf_mo.complete_lists_123();
 	gf_mo.show_lists();
 	let sc:Vec<Vec<usize>>=u16_2_usize(&gf_mo.sc);//.clone();
@@ -38,7 +38,16 @@ fn test_gusfield_manymany(){
 	//gusfield_manymany::get_posets(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()],0);
 	
 	// iterate proposals until capacities of proposers are full!
-	gusfield_manymany::get_posets_iter2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()]);
+	//gusfield_manymany::get_posets_iter2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()]);
+	let rmatch=gusfield_manymany::get_posets_iter4(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()]);
+	//println!("MANY-TO-MANY MATCHING:\n{:?}",rmatch);
+	println!("\nMANY-TO-MANY MATCHING:\nProposer-stable outcome:\n");
+	let match_string:String=gusfield_manymany::transform_manymany_matches_2string(&rmatch);
+	println!("{}",match_string);
+	
+	println!("Additional remarks: \nThe set of proposers is denoted by letter 'p' and the set of acceptors by 'a'.\nThe enumeration of this DA algorithm for many-to-many matching does not work if the acceptor's side has quotas (this is not because the algorithm is malfunctioning, it is rather a well-known fact that simple DA enumeration fail in many-to-many matching). \nHowever, if no enumeration is wanted so that we obtain proposer's best result, then you can run this DA algorithm from both sides.");
+	println!("If you still want to have an enumeration, then this might work only for many-to-one matching (proposer's side has quota, i.e. proposers=schools/hospitals) or for one-to-one matching.\n");
+	println!("This algorithm might be an own implementation but it is attributed to Roth/Peranson, Gusfield/Irving and Bansal et. al. In this case, it is just an conversion of theoretical framework to real code (the other alfgorithms are indeed an own invention).");
 }
 
 fn test_gusfield_manyone(){
@@ -59,6 +68,10 @@ fn test_gusfield_manyone(){
 	gusfield_manyone::get_posets2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![0;st.len()],0);
 	//gusfield_manyone::get_posets2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&vec![vec![0];sc.len()],0);
 	//gusfield_manyone::get_posets2(&sc,&st,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,0);
+}
+
+pub fn test_manymany(){
+	
 }
 
 fn test_gusfield(){
@@ -151,6 +164,65 @@ impl gusfield_manymany{
 		*/
 		println!("{}",self.transform_matches_2string(&school_matches));
 	}
+	fn manymany_wrapper(&mut self){
+		self.update();
+		let sc:Vec<Vec<usize>>=u16_2_usize(&self.sc);
+		let qu_sc:Vec<usize>=self.qu_sc.clone();
+		let st:Vec<Vec<usize>>=u16_2_usize(&self.st);
+		
+		let qu_st:Vec<usize>=self.qu_st.clone();
+		
+		/*
+		let adj:Vec<Vec<[usize;2]>>=Self::create_adj_school(&st,&sc);
+		println!("SCHOOLS");
+		for i in 0..sc.len(){
+			println!("i:{}: {:?}",i,sc[i]);
+		}
+		println!("STUDENTS");
+		for i in 0..st.len(){
+			println!("i:{}: {:?}",i,st[i]);
+		}
+		//display_adj(&adj);
+		let bp:Vec<Vec<bool>>=Self::bp_matrix_school(&adj);
+		//display_bp(&bp);
+		let bp_img=img_bp_matrix(&bp,"pic/bp.png".to_string());
+		*/
+		
+		
+		/*
+		let raw_school_matches:Vec<Vec<usize>>=Self::manyone7(&adj,&bp,&qu_sc,&vec![],0,st.len(),sc.len());
+		//println!("TRANSFORM MATCHES!");
+		let school_matches:Vec<Vec<usize>>=Self::transform_deepsearch_matches(&raw_school_matches,sc.len());
+		//println!("transformed matches:{:?}",school_matches);
+		println!("\n\nSCHOOL MATCHES:\n");
+		/*
+		for i in 0..school_matches.len(){
+			println!("{:?}",school_matches[i]);
+		}
+		*/
+		println!("{}",self.transform_matches_2string(&school_matches));
+		*/
+	}
+	fn transform_manymany_matches_2string(rmatch:&Vec<Vec<usize>>)->String{
+		let mut txt:String=String::new();
+		for i in 0..rmatch.len(){
+			txt+="p";
+			txt+=&(i+1).to_string();
+			txt+=":\t";
+			for j in 0..rmatch[i].len(){
+				txt+="a";
+				txt+=&(rmatch[i][j]+1).to_string();
+				if j<rmatch[i].len()-1{
+					txt+=", ";
+				}
+				else{
+					txt+="\n";
+				}
+			}
+		}
+		txt
+	}
+	
 	fn transform_matches_2string(&self,matches:&Vec<Vec<usize>>)->String{
 		let mut txt:String=String::new();
 		let mut header:Vec<usize>=vec![];
@@ -298,26 +370,6 @@ impl gusfield_manymany{
 		}	
 		return false;
 	}
-	// not neccessary!!!
-	/*
-	// Header not working
-	fn bp_efficient_school(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize)->bool{
-	//fn bp_efficient(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize) -> bool {
-		if adj[a[0]][b[1]][0]+diff<adj[a[0]][a[1]][0]{
-			if adj[a[0]][b[1]][1]+diff<adj[b[0]][b[1]][1]{
-				return true;
-			}
-		}
-		// "ELSE IF" IS NOT WORKING CORRECTLY!!!!!!!
-		//else if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
-		if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
-			if adj[b[0]][a[1]][1]+diff<adj[a[0]][a[1]][1]{
-				return true;
-			}
-		}	
-		return false;
-	}
-	*/
 
 	fn create_adj_school( m_: &Vec<Vec<usize>>, w_: &Vec<Vec<usize>> ) -> Vec<Vec<[usize; 2]>> {
 		println!("m:{:?}",m_);
@@ -2171,6 +2223,146 @@ impl gusfield_manymany{
 		}
 		true
 	}
+	fn DA_manymany(
+		m:&Vec<Vec<usize>>,w:&Vec<Vec<usize>>,
+		qu_sc_:&Vec<usize>,qu_st_:&Vec<usize>,
+		wtmp_:&Vec<Vec<usize>>,mtmp_:&Vec<usize>,
+		idx_:&Vec<Vec<usize>>,last_pess:&Vec<usize>,
+	)->Vec<Vec<usize>>{
+		//println!("get_poset2!");
+		//println!("INPUT DATA\nsc:{:?}\nst:{:?},wtmp:{:?}, mtmp:{:?}, idx:{:?}, cur:{}",m,w,wtmp_,mtmp_,idx_,cur_);
+		let mut rmatch:Vec<Vec<usize>>=vec![];
+		let mut wtmp:Vec<Vec<usize>>=wtmp_.clone();
+		let mut mtmp:Vec<usize>=mtmp_.clone();
+		let mut qu_sc:Vec<usize>=qu_sc_.clone();
+		let mut qu_st:Vec<usize>=qu_st_.clone();
+		let mut idx:Vec<Vec<usize>>=idx_.clone();
+		//let mut cur:usize=cur_;
+		let mut cur:usize=mtmp[0];
+		//println!("INPUT ITER2 DATA\ncur:{}, wtmp:{:?}, mtmp:{:?}, idx:{:?}",cur,wtmp,mtmp,idx);
+		//println!("cur:{}, idx:{:?}, m:{:?}",cur,idx,m);
+		let idx_cur_len:usize=idx[cur].len();
+		// PREF OVERFLOW
+		// ADDED M[CUR].LEN() <= IDX... AS ADDITIONAL CONDITION!
+		if idx[cur][idx_cur_len-1]>=w.len() || idx[cur].len()-1>=qu_sc[cur] || m[cur].len()<=idx[cur][idx_cur_len-1] || idx[cur][idx_cur_len-1]>last_pess[cur]{
+			//println!("PROPOSALS AT THE END OR PROPOSER-QUOTA FULL!");
+			let delpos:usize=mtmp.iter().position(|x| *x==cur).unwrap();
+			mtmp.remove(delpos);
+			if mtmp.len()>0{
+				//cur=mtmp[0];
+				rmatch=Self::DA_manymany(&m,&w,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,&last_pess);
+				//println!("RMATCH EXIT 1: {:?}",rmatch);
+				//return rmatch;
+			}
+			else{
+				// FINISHED! MATCH!
+				rmatch=Self::traverse_wtmp(&wtmp,m.len());
+				//println!("RMATCH EXIT 2: {:?}",rmatch);
+				//return rmatch;
+			}
+		}
+		else{			
+			//println!("cur:{}, idx:{:?}, idx_cur_len:{}",cur,idx,idx_cur_len);
+			//println!("m:{:?}",m);
+			let w_mi:usize=m[cur][idx[cur][idx_cur_len-1]];
+					
+			if !w[w_mi].contains(&cur){
+				let last_idx:usize=idx[cur][idx_cur_len-1];
+				idx[cur].push(last_idx+1);
+				rmatch=Self::DA_manymany(&m,&w,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,&last_pess);
+				//println!("RMATCH EXIT 3: {:?}",rmatch);
+				//return rmatch;
+			}
+			
+			else{
+				// STILL IN CAPACITY OF ACCEPTORS
+				if wtmp[w_mi].len()<qu_st[w_mi]{
+					//idx[cur]+=1;
+					wtmp[w_mi].push(cur);
+					let last_idx:usize=idx[cur][idx_cur_len-1];
+					idx[cur].push(last_idx+1);
+					rmatch=Self::DA_manymany(&m,&w,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,&last_pess);
+					//println!("RMATCH EXIT 4: {:?}",rmatch);
+					//return rmatch;
+				}
+				// CAPACITY OVERFLOW OF ACCEPTORS
+				else{
+					//println!("QUOTA OF ACCEPTOR IS FULL -> SELECT LAST ONE!");
+					if wtmp[w_mi].len()>qu_st[w_mi]{
+						println!("BIG PROBLEM! QUOTA OVERFLOW!");
+					}
+					let mut go_next:bool=true;
+					let mut pos_least_preferred:usize=0;
+					let mut m_least_preferred:usize=wtmp[w_mi][0];
+					for i in 0..wtmp[w_mi].len(){
+						let wpartner:usize=wtmp[w_mi][i];
+						let pos_cur:usize=w[w_mi].iter().position(|x| *x==cur).unwrap();
+						let pos_wprt:usize=w[w_mi].iter().position(|x| *x==wpartner).unwrap();
+						//if pos_wprt>pos_cur{
+						if pos_cur<pos_wprt{
+							go_next=false;
+							if pos_least_preferred<pos_wprt{
+								pos_least_preferred=pos_wprt;
+								m_least_preferred=wpartner;
+							}
+						}
+					}
+					let wpartner:usize=m_least_preferred;
+					let pos_cur:usize=w[w_mi].iter().position(|x| *x==cur).unwrap();
+					let pos_wprt:usize=w[w_mi].iter().position(|x| *x==wpartner).unwrap();
+					//if pos_wprt<pos_cur{
+					
+					// STILL UNPREFERRED BY ACCEPTOR
+					if go_next{
+						let idx_cur_len:usize=idx[cur].len();
+						idx[cur][idx_cur_len-1]+=1;
+						//rmatch=Self::get_posets(&m,&w,&wtmp,&mtmp,&idx,cur);				
+						rmatch=Self::DA_manymany(&m,&w,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,&last_pess);
+						//println!("RMATCH EXIT 5: {:?}",rmatch);
+						//return rmatch;
+					}
+					// ACCEPTOR KICKS LAST ONE OUT AND TAKES THE CURRENT PROPOSER!
+					else{
+						if pos_wprt==pos_cur{
+							println!("A BIG BIG PROBLEM !!!! SAME GUY!!!");
+						}						
+							// COPY !!!!!!!
+							// BE CAREFUL !									
+							let idx_cur_len:usize=idx[cur].len();
+							let last_idx:usize=idx[cur][idx_cur_len-1];
+							idx[cur].push(last_idx+1);
+							// REARRANGE WTMP !!!!!!!
+							let wpos_cur:usize=wtmp[w_mi].iter().position(|x| *x==wpartner).unwrap();
+							wtmp[w_mi].remove(wpos_cur);
+							//println!("BEFORE PUSH CUR: cur:{}, w_mi:{}, wtmp:{:?}, idx:{:?}",cur,w_mi,wtmp,idx);
+							wtmp[w_mi].push(cur);
+							//println!("AFTER  PUSH CUR: cur:{}, w_mi:{}, wtmp:{:?}, idx:{:?}",cur,w_mi,wtmp,idx);
+						// BE VEY CAREFUL !!!!!!!
+							//let idx_cur_len:usize=idx[cur].len();
+							let delpos_idx_wprt:usize=m[wpartner].iter().position(|x| *x==w_mi).unwrap();
+							if !idx[wpartner].contains(&delpos_idx_wprt){
+								println!("BIG PROBLEM! NOT IN IDX[WPARTNER]!!!!");
+								println!("idx:{:?}, wpartner:{}, delpos_idx_wprt:{}, w_mi:{}",idx,wpartner,delpos_idx_wprt,w_mi);
+							}
+							
+							// ####### IMPORTANT ####### 
+							let del_idx_wprt_final:usize=idx[wpartner].iter().position(|x| *x==delpos_idx_wprt).unwrap();
+							idx[wpartner].remove(del_idx_wprt_final);
+							let idx_wprt_len:usize=idx[wpartner].len();
+							mtmp.insert(0,wpartner);													
+						rmatch=Self::DA_manymany(&m,&w,&qu_sc,&qu_st,&wtmp,&mtmp,&idx,&last_pess);
+					}
+				}
+			}
+		}
+		//println!("####### END REACHED !!!!!!! #######\n{:?}",rmatch);
+		if !Self::check_consistency_mtmp_wtmp(&rmatch){
+			return vec![];
+		}
+		//println!("RESULT POSETS:{:?}",rmatch);
+		rmatch
+	}
+	
 	// iterating until capacity of proposers are full!
 	fn get_posets_iter7(
 		m:&Vec<Vec<usize>>,w:&Vec<Vec<usize>>,
