@@ -8,7 +8,7 @@ This project comprises the following algorithms:
 
 - N-sided matching (all stable outcomes) **NEW!**
 - DeepSearch (many-to-one, one-to-one, all stable outcomes)
-- BitSync (one-2-one, all stable outcomes)
+- BitSync (one-to-one, all stable outcomes)
 - Lattice matching with hash values (one-2-one, all stable outcomes, slow mode)
 - Vertex deletion mechanism (reduction via stability matrix, a speedy approach (object-oriented network) is still under construction)
 - Linear programming (one-to-one, many-to-one, all outcomes for one-to-one)
