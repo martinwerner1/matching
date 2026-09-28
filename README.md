@@ -9,7 +9,7 @@ This project comprises the following algorithms:
 - N-sided matching (all stable outcomes) **NEW!**
 - DeepSearch (many-to-one, one-to-one, all stable outcomes)
 - BitSync (one-to-one, all stable outcomes)
-- Lattice matching with hash values (one-2-one, all stable outcomes, slow mode)
+- Lattice matching with hash values (one-to-one, all stable outcomes, slow mode)
 - Vertex deletion mechanism (reduction via stability matrix, a speedy approach (object-oriented network) is still under construction)
 - Linear programming (one-to-one, many-to-one, all outcomes for one-to-one)
 - GS algorithm with GS reduced lists
@@ -17,7 +17,7 @@ This project comprises the following algorithms:
 
 Algorithms that are still under construction:
 - Lattice matching with smart pointers
-- Lattice matchig with merging of matching trees
+- Lattice matchig with merging matching trees (matching tree as a partial result on Lattice layer Lk)
 - N-sided matching for many-to-many-to-many-to-many matching, quotas for all agents
 - BitSync for many-to-many matching
 - Vertex deletion mechanism (fast version)
