@@ -24,6 +24,10 @@ Algorithms that are still under construction:
 - Linear programming for N-sided matching
 - Algorithms for presenting the full latex code of illustrations for vertex deletion mechanism
 
+Algorithms that are in planning:
+- N-sided matching: lattice matching
+- N-sided matching: vertex deletion mechanism with nested layers
+
 ### INSTRUCTIONS
 
 1. Please install the Rust programming language, see rustup: 
