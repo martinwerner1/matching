@@ -2,6 +2,27 @@
 
 Matching algorithms for the retrieval of all stable outcomes in two-sided and N-sided matching
 
+## ALGORITHMS
+
+This project comprises the following algorithms:
+
+- N-sided matching (all stable outcomes) **NEW!**
+- DeepSearch (many-to-one, one-to-one, all stable outcomes)
+- BitSync (one-2-one, all stable outcomes)
+- Lattice matching with hash values (one-2-one, all stable outcomes, slow mode)
+- Vertex deletion mechanism (reduction via stability matrix, a speedy approach (object-oriented network) is still under construction)
+- Linear programming (one-to-one, many-to-one, all outcomes for one-to-one)
+- GS algorithm with GS reduced lists
+- DA algorithm for many-to-many matching
+
+Algorithms that are still under construction:
+- Lattice matching with smart pointers
+- Lattice matchig with merging of matching trees
+- N-sided matching for many-to-many-to-many-to-many matching, quotas for all agents
+- BitSync for many-to-many matching
+- Vertex deletion mechanism (fast version)
+- Linear programming for N-sided matching
+- Algorithms for presenting the full latex code of illustrations for vertex deletion mechanism
 
 ### INSTRUCTIONS
 
