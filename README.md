@@ -26,7 +26,7 @@ This program is located in the subfolder: ./target/release/
 5. For trying several algorithms, please go into the src/main.rs file and uncomment/comment some test lines within the function "fn main()" by removing "//"!
 
 This project was tested under Linux and Windows systems: Debian/Fedora and Windows 10/11
-
+(It might be working for macOS, however, it is not tested yet.)
 
 ### ADDITIONAL REMARKS
 
