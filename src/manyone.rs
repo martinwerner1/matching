@@ -135,18 +135,74 @@ impl gusfield_manymany{
 		for i in 0..st.len(){
 			println!("i:{}: {:?}",i,st[i]);
 		}
-		display_adj(&adj);
+		//display_adj(&adj);
 		let bp:Vec<Vec<bool>>=Self::bp_matrix_school(&adj);
-		display_bp(&bp);
+		//display_bp(&bp);
 		let bp_img=img_bp_matrix(&bp,"pic/bp.png".to_string());
 		let raw_school_matches:Vec<Vec<usize>>=Self::manyone7(&adj,&bp,&qu_sc,&vec![],0,st.len(),sc.len());
-		println!("TRANSFORM MATCHES!");
+		//println!("TRANSFORM MATCHES!");
 		let school_matches:Vec<Vec<usize>>=Self::transform_deepsearch_matches(&raw_school_matches,sc.len());
-		println!("transformed matches:{:?}",school_matches);
-		println!("MANY ONE WRAPPER\nSCHOOL MATCHES:");
+		//println!("transformed matches:{:?}",school_matches);
+		println!("\n\nSCHOOL MATCHES:\n");
+		/*
 		for i in 0..school_matches.len(){
 			println!("{:?}",school_matches[i]);
 		}
+		*/
+		println!("{}",self.transform_matches_2string(&school_matches));
+	}
+	fn transform_matches_2string(&self,matches:&Vec<Vec<usize>>)->String{
+		let mut txt:String=String::new();
+		let mut header:Vec<usize>=vec![];
+		if matches.len()>0{
+			for i in 0..matches[0].len(){
+				header.push(i);
+			}
+			txt+=&self.transform_residents_headers_2string(&header);
+			for i in 0..matches.len(){
+				txt+=&self.transform_hospitals_2string(&matches[i]);
+			}
+		}
+		txt
+	}
+	fn transform_residents_headers_2string(&self,residents:&Vec<usize>)->String{
+		let mut txt:String=String::new();
+		for i in 0..residents.len(){
+			txt+="r";
+			txt+=&(residents[i]+1).to_string();
+			if i<residents.len()-1{
+				txt+=", ";
+			}
+			else{
+				txt+="\n";
+			}
+		}
+		for i in 0..residents.len(){
+			txt+="----";
+			if i==residents.len()-1{
+				txt+="\n";
+			}
+		}
+		txt
+	}
+	fn transform_hospitals_2string(&self, hospitals:&Vec<usize>)->String{
+		let mut txt:String=String::new();
+		for i in 0..hospitals.len(){
+			txt+="h";
+			txt+=&(hospitals[i]+1).to_string();
+			if i<hospitals.len()-1{
+				txt+=", ";
+				let mut i_cp:usize=i;
+				while (i_cp+1)/10>0{
+					txt+=" ";
+					i_cp/=10;
+				}
+			}
+			else{
+				txt+="\n";
+			}
+		}
+		txt
 	}
 	fn bp_matrix_school(adj:&Vec<Vec<[usize;2]>>)->Vec<Vec<bool>>{
 		let mut mat:Vec<Vec<bool>>=vec![];
@@ -157,7 +213,7 @@ impl gusfield_manymany{
 		}
 		//for i in 0..n*n{
 		for i in 0..n{		
-			println!("bp_matrix i:{}, len:{}",i,adj.len());
+			//println!("bp_matrix i:{}, len:{}",i,adj.len());
 			//for j in 0..i{
 			for j in 0..ni{
 				let mut row:Vec<bool>=vec![];
@@ -290,8 +346,8 @@ impl gusfield_manymany{
 			}
 			*/
 			for j in 0..k{
-				println!("m[{}]:{:?}\nw[{}]:{:?}",i,m_[i],j,w_[j]);
-				println!("i:{}, l:{}, j:{}, k:{}",i,l,j,k);
+				//println!("m[{}]:{:?}\nw[{}]:{:?}",i,m_[i],j,w_[j]);
+				//println!("i:{}, l:{}, j:{}, k:{}",i,l,j,k);
 				let mij=m_[i][j];
 				let wij=w_[j][i];
 				let posmw=m_[i].iter().position(|&x| x==mij).unwrap();
