@@ -17,7 +17,7 @@ This project comprises the following algorithms:
 
 Algorithms that are still under construction:
 - Lattice matching with smart pointers
-- Lattice matchig with merging matching trees (matching tree as a partial result on Lattice layer Lk)
+- Lattice matching with merging matching trees (matching tree as a partial result on Lattice layer Lk)
 - N-sided matching for many-to-many-to-many-to-many matching, quotas for all agents
 - BitSync for many-to-many matching
 - Vertex deletion mechanism (fast version)
