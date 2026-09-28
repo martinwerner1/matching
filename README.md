@@ -10,7 +10,7 @@ This project comprises the following algorithms:
 - DeepSearch (many-to-one, one-to-one, all stable outcomes)
 - BitSync (one-to-one, all stable outcomes)
 - Lattice matching with hash values (one-to-one, all stable outcomes, slow mode)
-- Vertex deletion mechanism (reduction via stability matrix, a speedy approach (object-oriented network) is still under construction)
+- Vertex deletion mechanism (reduction via stability matrix, a fast approach (object-oriented network) is still under construction)
 - Linear programming (one-to-one, many-to-one, all outcomes for one-to-one)
 - GS algorithm with GS reduced lists
 - DA algorithm for many-to-many matching
