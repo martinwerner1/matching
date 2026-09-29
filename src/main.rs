@@ -27,7 +27,7 @@ fn main(){
 	// However it can be still used for many-to-one as well as one-to-one matching (for enumeration) or for the obtaining the proposer's best match results.
 	//manyone::test_gusfield_manymany();
 	
-	// LINEAR PROGRAMMING
+	// LINEAR PROGRAMMING (ENUMERATION OF ALL STABLE MATCHES)
 	//test_lp();
 	
 	// VERTEX DELETION MECHANISM FOR REMOVING UNSTABLE PAIRS
