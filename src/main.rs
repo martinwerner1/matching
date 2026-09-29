@@ -28,7 +28,7 @@ fn main(){
 	//manyone::test_gusfield_manymany();
 	
 	// LINEAR PROGRAMMING
-	test_lp();
+	//test_lp();
 	
 	// VERTEX DELETION MECHANISM FOR REMOVING UNSTABLE PAIRS
 	//node_deletion::tests();
