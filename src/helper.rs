@@ -392,12 +392,6 @@ impl IOClass{
 		}
 		bits
 	}
-
-
-
-
-
-
 	pub fn bp_matrix_2usize_block(bp:&Vec<Vec<bool>>,bs_:usize)->Vec<Vec<usize>>{
 		let mut bits:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len();
@@ -425,41 +419,19 @@ impl IOClass{
 				}
 				*/
 				if bp[i][j]{
-					//val+=(2_i32.pow((n-j-1) as u32)) as usize;
-					//println!("bs: {}, j: {}, i_b: {}, val: {}, term:",bs,j,i_b,val);
-					//println!("{}",bs+i_b*bs-1-j);
-					//val+=(2_i32.pow((bs-j+i_b*bs-1) as u32)) as usize;
-					
 					// CHANGED i32 TO u32
 					//val+=(2_i32.pow((bs+i_b*bs-1-j) as u32)) as usize;
 					val+=(2_u32.pow((bs+i_b*bs-1-j) as u32)) as usize;
 				}
-				// RUNTIME ERROR?
-				/*
-				if j==i_b*bs-1|| j==n-1{
-					i_b+=1;
-					bits_i.push(val as usize);
-				}
-				*/
-				
 				if j==bs-1 && i_b==0{
 					i_b+=1;
 					bits_i.push(val as usize);
 					val=0;
 				}
-				else{
-					//println!("test point bp_matrix_2usize_block");
-					
+				else{					
 					if j<bs{
 						continue;
 					}
-					/*
-					if j>bs{
-						println!("j>bs");
-					}
-					*/
-					
-					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if j==(i_b+1)*bs-1 || j==n-1{
 						//println!("increase");
 						i_b+=1;
@@ -470,14 +442,10 @@ impl IOClass{
 
 
 			}
-			//bits.push(val);
 			bits.push(bits_i);
 		}
 		bits
 	}
-
-
-
 	pub fn bp_matrix_2usize_block2(bp:&Vec<Vec<bool>>,bs_:usize)->Vec<Vec<usize>>{
 		let mut bits:Vec<Vec<usize>>=vec![];
 		let n:usize=bp.len();
@@ -505,64 +473,24 @@ impl IOClass{
 				}
 				*/
 				if bp[i][j]{
-					//val+=(2_i32.pow((n-j-1) as u32)) as usize;
-					//println!("bs: {}, j: {}, i_b: {}, val: {}, term:",bs,j,i_b,val);
-					//println!("{}",bs+i_b*bs-1-j);
-					//val+=(2_i32.pow((bs-j+i_b*bs-1) as u32)) as usize;
-					
-					// CHANGED i32 TO u32
-					//val+=(2_i32.pow((bs+i_b*bs-1-j) as u32)) as usize;
-					
-					//println!("test point");
-					
-					// CHANGED FROM I32 TO U32 TO USIZE TO U128 !!!!!!! WORKS !!!!!!!
-					
-					//val+=(2_u32.pow((bs+i_b*bs-1-j) as u32)) as usize;
-					//val+=(2_usize.pow((bs+i_b*bs-1-j) as u32)) as usize;
 					val+=(2_u128.pow((bs+i_b*bs-1-j) as u32)) as usize;
 				}
-				// RUNTIME ERROR?
-				/*
-				if j==i_b*bs-1|| j==n-1{
-					i_b+=1;
-					bits_i.push(val as usize);
-				}
-				*/
-				
 				if j==bs-1 && i_b==0{
 					i_b+=1;
 					bits_i.push(val as usize);
 					val=0;
 				}
 				else{
-					//println!("test point bp_matrix_2usize_block");
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					
 					if j<bs{
 						continue;
 					}
-					
-					/*
-					if j>=bs{
-						println!("j>bs");
-					}
-					*/
-					
-					//println!("j:{},i{},i_b:{},bs:{},n:{}, (i_b+1)*bs-1:{}",j,i,i_b,bs,n,(i_b+1)*bs-1);
-					
-					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if (j==(i_b+1)*bs-1) || (j==n-1){
-						//println!("increase");
 						i_b+=1;
 						bits_i.push(val as usize);
 						val=0;
 					}
 				}
-
-
 			}
-			//bits.push(val);
 			bits.push(bits_i);
 		}
 		bits
@@ -593,6 +521,21 @@ impl IOClass{
 		}
 		decomposed_matches
 	}
+	pub fn transform_matches_2pairs(matches:&Vec<Vec<usize>>)->Vec<Vec<[usize;2]>>{
+		let mut decomposed_matches:Vec<Vec<[usize;2]>>=vec![];
+		
+		for i in 0..matches.len(){
+			let mut match_i:Vec<[usize;2]>=vec![];
+			for j in 0..matches[i].len(){
+				//let (m,w)=Self::decompose_ij(matches[i][j],n);
+				let (m,w)=(j,matches[i][j]);
+				match_i.push([m,w]);
+			}
+			decomposed_matches.push(match_i);
+		}
+		decomposed_matches
+	}
+
 	pub fn decompose_ij(len:usize,n:usize)->(usize,usize){
 		let mut i:usize=len/n;
 		let mut j:usize=len-i*n;
@@ -615,6 +558,22 @@ impl IOClass{
 			}
 			println!();
 		}
+	}
+	pub fn transform_match_2string(match_:&Vec<[usize;2]>)->String{
+		let mut txt:String=String::new();
+		for i in 0..match_.len(){
+			let pair=Self::transform_pair_2string(match_[i]);
+			txt+=&format!("{{{},{}}}",pair.0,pair.1);
+			if i<match_.len()-1{
+				//print!(",");
+				txt+=", ";
+			}
+			else{
+				//print!("");
+				//txt+="\n";
+			}
+		}
+		txt
 	}
 	pub fn transform_pair_2string(pair:[usize;2])->(String,String){
 		let mut m:String="m".to_string();
