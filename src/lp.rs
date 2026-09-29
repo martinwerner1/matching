@@ -1,9 +1,6 @@
 #![allow(warnings)]
 use highs::{RowProblem,Col,Sense};
 use super::helper::{IOClass};
-
-
-
 pub struct many2one{
 	m:Vec<Vec<usize>>,
 	w:Vec<Vec<usize>>,
@@ -50,48 +47,6 @@ impl many2one{
 		}
 
 	}
-	/*
-	// behind the main pref lists, the dummy is also added!
-	fn complete_lists_123_add1(&mut self){
-		//let (consistency,sc_xlen,st_xlen)=self.check_list_consistency();
-		//if self.check_list_consistency().0{
-		//if consistency{
-			let st_last:u16=self.st.len() as u16;
-			//let st_last:u16=self.st.len() as u16;
-			let sc_last:u16=self.sc.len() as u16;
-			for i in 0..self.sc.len(){				
-				for j in self.sc[i].len()-1 as usize..(st_last) as usize{
-					self.sc[i].push(st_last);
-				}
-			}
-			//let lastsc:Vec<u16>=vec![st_last;(st_last+1) as usize];
-			let mut lastsc:Vec<u16>=vec![st_last];
-			for i in 0..self.st.len(){
-				lastsc.push(i as u16)
-			}
-			//self.sc.push(lastsc);
-			for i in 0..self.st.len(){				
-				//for j in self.st[i].len()-1 as usize..(sc_last-1) as usize{
-				for j in self.st[i].len()-1 as usize..(sc_last) as usize{
-					self.st[i].push(sc_last);
-				}
-			}
-			//let lastst:Vec<u16>=vec![sc_last;sc_last as usize];
-			let mut lastst:Vec<u16>=vec![sc_last];
-			for i in 0..self.sc.len(){
-				lastst.push(i as u16);
-			}
-		
-			self.sc.push(lastsc);
-			self.st.push(lastst);
-		//}
-		//else{
-			// 
-		//}
-		self.qu_sc.push(1);
-		self.qu_st.push(1);
-	}
-	*/
 	// behind the main pref lists, the dummy is also added!
 	fn complete_lists_123_add1_mw(&mut self){
 		//let (consistency,sc_xlen,st_xlen)=self.check_list_consistency();
@@ -601,8 +556,8 @@ impl one2one{
 	}
 	//pub fn stability_bp_LP_HIGHS_IMPORTANT_fractional_test()->Vec<usize>{
 	pub fn run_lp(&self)->Vec<usize>{
-		println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
-		println!("INTEGER SOLUTION BUT NO FRACTIONAL SOLUTION UNFORTUNATELY!");
+		//println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
+		//println!("INTEGER SOLUTION");
 		let mut matchLP:matchingLP=matchingLP::new();
 		let m:Vec<Vec<usize>>=matchLP.m.clone();
 		let w:Vec<Vec<usize>>=matchLP.w.clone();
@@ -650,6 +605,61 @@ impl one2one{
 		let matchres:Vec<usize>=transform_to_match(solution.columns(),mlen);
 		println!("MATCH RESULT:\n{:?}",matchres);
 		let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
+		let matchres_pairs=IOClass::transform_matches_2pairs(&vec![matchres]);
+		IOClass::print_matches_decomposed(&matchres_pairs);
+		pos_idx	
+	}
+	pub fn enumerate_all_matches(&mut self)->Vec<usize>{
+		//println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
+		let mut matchLP:matchingLP=matchingLP::new();
+		let m:Vec<Vec<usize>>=matchLP.m.clone();
+		let w:Vec<Vec<usize>>=matchLP.w.clone();
+		let adj:Vec<Vec<[usize;2]>>=IOClass::create_adj(&m,&w);
+		let A_ub:Vec<Vec<i8>>=matchLP.stability_rothblum_A_le();
+		let A_eq:Vec<Vec<usize>>=matchLP.get_a_eq();
+		let A_eq_toggle:Vec<Vec<usize>>=toggle_matrix(&A_eq);
+		let mlen:usize=m.len();
+		let wlen:usize=w.len();
+		let c:Vec<usize>=vec![1;m.len()*w.len()];
+		let mut pb = RowProblem::new();		
+		let mut vars:Vec<Col>=vec![];
+		for i in 0..c.len(){
+			vars.push(pb.add_column(1.0,0.0..));
+		}
+		for i in 0..A_eq.len(){
+			let mut row:Vec<(Col,f64)>=vec![];
+			for j in 0..A_eq[i].len(){
+				row.push((vars[j],A_eq[i][j] as f64));
+			}
+			pb.add_row(..1,&row);	
+		}
+		for i in 0..A_ub.len(){
+			let mut row:Vec<(Col,f64)>=vec![];
+			for j in 0..A_ub[i].len(){
+				row.push((vars[j],A_ub[i][j] as f64));
+			}
+			pb.add_row(1.0..,&row);	
+		}
+		println!("MATCHING BP LP HIGHS");
+		let solution = pb.optimise(Sense::Maximise).solve().get_solution();
+		println!("SOLUTION:\n{:?}",solution);		
+		let matchres:Vec<usize>=transform_to_match(solution.columns(),mlen);
+		self.matches.push(matchres.clone());
+		println!("MATCH RESULT:\n{:?}\n",matchres);
+		let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
+		let matchres_pairs=IOClass::transform_matches_2pairs(&vec![matchres.clone()]);
+		//IOClass::print_matches_decomposed(&matchres_pairs);
+		//println!("ENUMERATION VIA LINEAR PROGRAMMING (Please wait until the full list of matches is loaded):\n{}",IOClass::transform_match_2string(&matchres_pairs[0]));
+		println!("ENUMERATION OF STABLE MATCHES VIA LINEAR PROGRAMMING (Please wait until the full list of matches is loaded):\n");
+		//self.enumerate_from_match(matchstack:&Vec<Vec<usize>>,onematch:Vec<usize>){
+		self.enumerate_from_match_no_duplicates(matchres.clone());
+		for i in 0..self.matches.len(){
+			//println!("{:?}",new_matches[i]);
+			let matchres_pairs=IOClass::transform_matches_2pairs(&vec![self.matches[i].clone()]);
+			println!("{}",IOClass::transform_match_2string(&matchres_pairs[0]));
+
+		}
+
 		pos_idx	
 	}
 	pub fn lp_go(&self)->Vec<usize>{
@@ -709,21 +719,16 @@ impl one2one{
 		}
 		constraints
 	}
-	//pub fn enumerate_from_match(&self,matchstack:&Vec<Vec<usize>>,pb:RowProblem,onematch:Vec<usize>){
 	pub fn enumerate_from_match(&self,matchstack:&Vec<Vec<usize>>,onematch:Vec<usize>){
 		let allbits:Vec<Vec<i8>>=Self::get_all_bits(&vec![],0,onematch.len());
 		//let allbits:Vec<Vec<i8>>=Self::get_linear_bits(onematch.len());
 		let zeromatch:Vec<usize>=vec![0;onematch.len()];
-		println!("ALLBITS\n:{:?}",allbits);
 		let mut new_matches:Vec<Vec<usize>>=vec![];
 		for i in 0..allbits.len(){
 			let constraints:Vec<Vec<f64>>=self.get_enumerate_constraint(&allbits[i],&onematch);
 			// RESET THE LP
 			let A_ub:Vec<Vec<i8>>=self.A_ub.clone();
-			//let (mut c,mat):(Vec<i8>,Vec<Vec<i8>>)=self.fractional_setup_rothblum93_3();
 			let A_eq:Vec<Vec<usize>>=self.A_eq.clone();
-			// COMMENTED!
-			//let A_eq_toggle:Vec<Vec<usize>>=toggle_matrix(&A_eq);
 			let mlen:usize=self.m.len();
 			let wlen:usize=self.w.len();
 			let c:Vec<usize>=vec![1;self.m.len()*self.w.len()];
@@ -739,31 +744,24 @@ impl one2one{
 				}
 				pb.add_row(..1,&row);	
 			}
-			// the off vector holds if we have a quadratic matrix with n x n rows/columns!
-			//let mut off:Vec<usize>=vec![];
 			for i in 0..A_ub.len(){
-				//if !off.contains(&i){
-					let mut row:Vec<(Col,f64)>=vec![];
-					for j in 0..A_ub[i].len(){
-						row.push((vars[j],A_ub[i][j] as f64));
-					}
-					pb.add_row(1.0..,&row);	
-				//}
+				let mut row:Vec<(Col,f64)>=vec![];
+				for j in 0..A_ub[i].len(){
+					row.push((vars[j],A_ub[i][j] as f64));
+				}
+				pb.add_row(1.0..,&row);	
 			}
 			for i in 0..constraints.len(){
-				//if !off.contains(&i){
-					let mut row:Vec<(Col,f64)>=vec![];
-					for j in 0..constraints[i].len(){
-						row.push((vars[j],constraints[i][j]));
-					}
-					pb.add_row(..0.0,&row);	
-				//}
+				let mut row:Vec<(Col,f64)>=vec![];
+				for j in 0..constraints[i].len(){
+					row.push((vars[j],constraints[i][j]));
+				}
+				pb.add_row(..0.0,&row);	
 			}
-			println!("ENUMERATE FROM MATCH ALLBITS[{}]:{:?}",i,allbits[i]);
+			//println!("ENUMERATE FROM MATCH ALLBITS[{}]:{:?}",i,allbits[i]);
 			let solution = pb.optimise(Sense::Maximise).solve().get_solution();
-			//println!("SOLUTION:\n{:?}",solution);		
 			let matchres:Vec<usize>=transform_to_match(solution.columns(),self.m.len());
-			println!("MATCH RESULT:\n{:?}",matchres);
+			//println!("MATCH RESULT:\n{:?}",matchres);
 			let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
 			//pos_idx			
 			if matchres != zeromatch{
@@ -774,56 +772,92 @@ impl one2one{
 				}
 			}			
 		}
-		println!("NEW MATCHES\n");
+		//println!("NEW MATCHES\n");
 		for i in 0..new_matches.len(){
-			println!("{:?}",new_matches[i]);
+			//println!("{:?}",new_matches[i]);
+			let matchres_pairs=IOClass::transform_matches_2pairs(&vec![new_matches[i].clone()]);
+			println!("{}",IOClass::transform_match_2string(&matchres_pairs[0]));
+
 		}
 		
 	}
-	
-	pub fn enumerate_lp(&self,pb:RowProblem)->Vec<usize>{
-		println!("ENUMERATE");
-		println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
-		println!("INTEGER SOLUTION BUT NO FRACTIONAL SOLUTION UNFORTUNATELY!");
-
-
-		let mlen:usize=self.m.len();
-		//let wlen:usize=self.w.len();
-		//let c:Vec<usize>=vec![1;self.m.len()*self.w.len()];
-		//let A_eq=self.A_eq.clone();
-		//let A_ub=self.A_ub.clone();
-		//let mut pb = RowProblem::new();
-		
-		/*
-		let mut vars:Vec<Col>=vec![];
-		for i in 0..c.len(){
-			vars.push(pb.add_column(1.0,0.0..));
-		}
-		for i in 0..A_eq.len(){
-			let mut row:Vec<(Col,f64)>=vec![];
-			for j in 0..A_eq[i].len(){
-				row.push((vars[j],A_eq[i][j] as f64));
+	// TEST
+	//pub fn enumerate_from_match_no_duplicates(&self,matchstack:&Vec<Vec<usize>>,onematch:Vec<usize>){
+	pub fn enumerate_from_match_no_duplicates(&mut self,onematch:Vec<usize>){
+		//println!("onematch.len:{}",onematch.len());
+		let allbits:Vec<Vec<i8>>=Self::get_all_bits(&vec![],0,onematch.len());
+		//let allbits:Vec<Vec<i8>>=Self::get_linear_bits(onematch.len());
+		//println!("allbits:{:?}",allbits);
+		let zeromatch:Vec<usize>=vec![0;onematch.len()];
+		let mut new_matches:Vec<Vec<usize>>=vec![];
+		for i in 0..allbits.len(){
+			let constraints:Vec<Vec<f64>>=self.get_enumerate_constraint(&allbits[i],&onematch);
+			// RESET THE LP
+			let A_ub:Vec<Vec<i8>>=self.A_ub.clone();
+			let A_eq:Vec<Vec<usize>>=self.A_eq.clone();
+			let mlen:usize=self.m.len();
+			let wlen:usize=self.w.len();
+			let c:Vec<usize>=vec![1;self.m.len()*self.w.len()];
+			let mut pb = RowProblem::new();		
+			let mut vars:Vec<Col>=vec![];
+			for i in 0..c.len(){
+				vars.push(pb.add_column(1.0,0.0..));
 			}
-			//pb.add_row(..=b_eq[i] as f64,&row);	
-			//pb.add_row(1..1,&row);	
-			pb.add_row(..1,&row);	
-		}
-		// the off vector holds if we have a quadratic matrix with n x n rows/columns!
-		//let mut off:Vec<usize>=vec![];
-		for i in 0..A_ub.len(){
-			//if !off.contains(&i){
+			for i in 0..A_eq.len(){
+				let mut row:Vec<(Col,f64)>=vec![];
+				for j in 0..A_eq[i].len(){
+					row.push((vars[j],A_eq[i][j] as f64));
+				}
+				pb.add_row(..=1,&row);	
+			}
+			for i in 0..A_ub.len(){
 				let mut row:Vec<(Col,f64)>=vec![];
 				for j in 0..A_ub[i].len(){
 					row.push((vars[j],A_ub[i][j] as f64));
 				}
 				pb.add_row(1.0..,&row);	
-			//}
+			}
+			for i in 0..constraints.len(){
+				let mut row:Vec<(Col,f64)>=vec![];
+				for j in 0..constraints[i].len(){
+					row.push((vars[j],constraints[i][j]));
+				}
+				pb.add_row(..0.0,&row);	
+			}
+			//println!("ENUMERATE FROM MATCH ALLBITS[{}]:{:?}",i,allbits[i]);
+			let solution = pb.optimise(Sense::Maximise).solve().get_solution();
+			//println!("solution\n{:?}",solution);
+			//let matchres:Vec<usize>=transform_to_match(solution.columns(),self.m.len());
+			let matchres:Option<Vec<usize>>=transform_to_match_pretest(solution.columns(),self.m.len());
+			//println!("MATCH RESULT:\n{:?}",matchres);
+			if !matchres.is_none(){
+				let matchres_unwrap:Vec<usize>=matchres.unwrap();
+				let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
+				//pos_idx			
+				if matchres_unwrap != zeromatch{
+					//if !matchstack.contains(&matchres){
+					if !self.matches.contains(&matchres_unwrap){
+						if !new_matches.contains(&matchres_unwrap){
+							new_matches.push(matchres_unwrap);
+						}
+					}
+				}			
+			}
 		}
-		// TEST CLONE PB!
-		let pb_clone:RowProblem=pb.clone();
-		*/
-		
-		
+		for i in 0..new_matches.len(){
+			if !self.matches.contains(&new_matches[i]){
+				self.matches.push(new_matches[i].clone());
+				self.enumerate_from_match_no_duplicates(new_matches[i].clone())
+			}
+		}		
+	}
+
+	
+	pub fn enumerate_lp(&self,pb:RowProblem)->Vec<usize>{
+		println!("ENUMERATE");
+		//println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
+		//println!("INTEGER SOLUTION BUT NO FRACTIONAL SOLUTION UNFORTUNATELY!");
+		let mlen:usize=self.m.len();		
 		println!("MATCHING BP LP HIGHS");
 		let solution = pb.optimise(Sense::Maximise).solve().get_solution();
 		println!("SOLUTION:\n{:?}",solution);		
@@ -942,38 +976,6 @@ impl LPHelper{
 			A_el.push(empty_vi);						
 		}
 		A_el
-		/*
-		let mut A_el:Vec<Vec<i8>>=vec![];
-		let mut v:Vec<Vec<usize>>=self.get_vertices();
-		let mlen:usize=self.m.len();
-		let wlen:usize=self.w.len();
-		let mut empty:Vec<i8>=vec![];
-		for i in 0..v.len(){
-			empty.push(0);
-		}
-		for vi in v{
-			let mut empty_vi:Vec<i8>=empty.clone();
-			let mi:usize=vi[0];
-			let wi:usize=vi[1];
-			let mlen:usize=self.m.len();
-			let wlen:usize=self.w.len();
-			empty_vi[mi*wlen+wi]=1;
-			let posw:usize=self.m[mi].iter().position(|x| *x==wi).unwrap();
-			let posm:usize=self.w[wi].iter().position(|x| *x==mi).unwrap();
-			// men's side!
-			for j in 0..posw{
-				let wj:usize=self.m[mi][j];
-				empty_vi[mi*wlen+wj]=1;
-			}
-			for j in 0..posm{
-				let mj:usize=self.w[wi][j];
-				empty_vi[mj*wlen+wi]=1;
-			}
-			A_el.push(empty_vi);						
-		}
-		A_el
-		*/
-		
 	}
 	fn get_vertices(&self)->Vec<Vec<usize>>{
 		let mut vertices:Vec<Vec<usize>>=vec![];
@@ -985,8 +987,6 @@ impl LPHelper{
 		vertices
 	}
 }
-
-
 struct matchingLP{
 	m:Vec<Vec<usize>>,
 	w:Vec<Vec<usize>>,
@@ -1288,11 +1288,6 @@ impl matchingLP{
 				mat.push(row);
 			}
 		}
-		//println!("c:{:?}",c);
-		//println!("mat:");
-		for i in 0..mat.len(){
-			//println!("{:?}",mat[i]);
-		}
 		(c,mat)
 	}
 	fn fractional_setup_rothblum93_2(&self)->(Vec<i8>,Vec<Vec<i8>>){
@@ -1487,6 +1482,38 @@ fn transform_to_match(input:&[f64],n:usize)->Vec<usize>{
 	println!("MATCH: {:?}",matchres);
 	matchres
 }
+//fn transform_to_match_pretest(input:&[f64],n:usize)->Vec<usize>{
+fn transform_to_match_pretest(input:&[f64],n:usize)->Option<Vec<usize>>{
+//fn transform_to_match(&self,input:&Vec<usize>)->Vec<usize>{
+	let mut matchres:Vec<usize>=vec![];
+	//let n:usize=self.m.len();
+	for i in 0..n{
+		matchres.push(0);
+	}
+	for i in 0..input.len(){
+		if input[i] as f64==1.0{
+			let m:usize=i/n;
+			let w:usize=i%n;
+			matchres[m]=w;
+		}
+	}
+	let mut pretest:Vec<usize>=vec![];
+	for i in 0..matchres.len(){
+		if !pretest.contains(&matchres[i]){
+			pretest.push(matchres[i]);
+		}
+		
+	}
+	if pretest.len()==n{
+		return Some(matchres);
+	}
+	else{
+		return None;
+	}
+	//println!("MATCH: {:?}",matchres);
+	//matchres
+}
+
 fn get_positive_idx(a:&Vec<f64>)->Vec<usize>{
 	let mut idx:Vec<usize>=vec![];
 	for i in 0..a.len(){
