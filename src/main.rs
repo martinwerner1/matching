@@ -19,7 +19,7 @@ fn main(){
 
 
 	
-	// ALL STABLE MATCHES IN MANY-TO-ONE MATCHING (GUSFIELD/IRVING EXAMPLE)
+	// ALL STABLE MATCHES IN MANY-TO-ONE MATCHING DEEPSEARCH (GUSFIELD/IRVING EXAMPLE)
 	//manyone::test_manyone_enumeration();
 
 	// DA algorithm for many-to-many matching. No enumeration of stable outcomes is possible if the acceptor's side 
@@ -28,7 +28,7 @@ fn main(){
 	//manyone::test_gusfield_manymany();
 	
 	// LINEAR PROGRAMMING
-	//test_lp();
+	test_lp();
 	
 	// VERTEX DELETION MECHANISM FOR REMOVING UNSTABLE PAIRS
 	//node_deletion::tests();
@@ -60,9 +60,11 @@ fn test_lattice(){
 }
 fn test_lp(){
 	//let lp_match:Vec<usize>=one2one::run_lp();
+	println!("\nLINEAR PROGRAMMING\n");
 	let mut lp:one2one=one2one::init();
 	lp.update();
-	lp.run_lp();
+	//lp.run_lp();
+	lp.enumerate_all_matches();
 	
 	/*
 	let lpmatch:Vec<usize>=lp.lp_go();
@@ -88,6 +90,3 @@ fn test_lp(){
 	println!("MATCH RESULT MANY2ONE LP\n{:?}",resultLP);
 	*/
 }
-
-
-
