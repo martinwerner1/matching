@@ -24,7 +24,7 @@ fn main(){
 
 	// DA algorithm for many-to-many matching. No enumeration of stable outcomes is possible if the acceptor's side 
 	// has quotas (this is a well-known fact that simple DA enumeration fails in many-to-many matching; see Bansal, Eirinakis etc.). 
-	// However it can be still used for many-to-one as well as one-to-one matching (for enumeration) or for the obtaining the proposer's best match results.
+	// However it can still be used for many-to-one as well as one-to-one matching (for enumeration) or for the obtaining the proposer's best match results.
 	//manyone::test_gusfield_manymany();
 	
 	// LINEAR PROGRAMMING (ENUMERATION OF ALL STABLE MATCHES)
