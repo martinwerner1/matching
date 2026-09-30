@@ -299,4 +299,196 @@ impl PSGrid{
 	}
 	
 }
+pub struct Pref{
+	m:Vec<Vec<usize>>,
+	w:Vec<Vec<usize>>,
+}
+impl Pref{
+	pub fn new()->Self{
+		let m_:Vec<Vec<usize>>=IOClass::read_txt("pref/m.txt".to_string());
+		let w_:Vec<Vec<usize>>=IOClass::read_txt("pref/w.txt".to_string());
+		Self{
+			m:m_,
+			w:w_,
+		}
+	}
+	pub fn get_pref(&self)->String{
+		let mut txt:String=String::new();
+		txt+="\\begin{center}\n\\begin{table}\n\\begin{tabular}{|c|}\\hline\n";
+		assert!(self.m.len()==self.w.len());
+		for i in 0..self.m.len(){
+			txt+=&format!("$m_{{{}}}$: ",i+1);
+			for j in 0..self.m[i].len(){
+				txt+=&format!("$w_{{{}}}$ ",self.m[i][j]+1);
+				if j<self.m[i].len()-1{
+					txt+="$\\succ$ ";
+				}
+			}
+			txt+=&format!("\\qquad\\qquad$w_{{{}}}$: ",i+1);
+			for j in 0..self.w[i].len(){
+				txt+=&format!("$m_{{{}}}$ ",self.w[i][j]+1);
+				if j<self.w[i].len()-1{
+					txt+="$\\succ$ ";
+				}
+				else{
+					txt+="\\\\ \n";
+				}
+			}
+		}
+		txt+="\\hline\n";
+		txt+="\\end{tabular}\n\\end{table}\n\\end{center}\n";
+		txt
+	}
+}
 
+pub struct RankMatrix{
+	adj:Vec<Vec<[usize;2]>>,
+}
+impl RankMatrix{
+	pub fn new(adj_:&Vec<Vec<[usize;2]>>)->Self{
+		Self{
+			adj:adj_.to_vec(),
+		}
+	}
+	pub fn get_table_rank(&self)->String{
+		let mut txt:String=String::new();
+		txt+="\\begin{center}\n\\begin{table}\n";
+		txt+="\\centering\n\\begin{tabular}";
+		if self.adj.len()>0{
+			txt+="{|l ";
+			for j in 0..self.adj[0].len(){
+				txt+="|c ";
+			}
+			txt+="|}\\hline\n&";
+			for j in 0..self.adj.len(){
+				txt+=&format!("$w_{{{}}}$",j+1);
+				if j<self.adj[0].len()-1{
+					txt+=" & ";
+				}
+				else{
+					txt+="\\\\ \\hline\n";
+				}
+			}
+			for i in 0..self.adj.len(){
+				txt+=&format!("$m_{{{}}}$ &",i+1);
+				for j in 0..self.adj[i].len(){
+					txt+=&format!("$({},{})$",self.adj[i][j][0]+1,self.adj[i][j][1]+1);
+					if j<self.adj[i].len()-1{
+						txt+=" & ";
+					}
+					else{
+						txt+="\\\\ \\hline\n";
+					}
+				}
+			}
+		}
+		txt+="\\end{tabular}\n";
+		txt+=&format!("\\caption{{Rank matrix $\\xi$ at $n={}$}}",self.adj.len());
+		txt+="\\end{table}\n\\end{center}";
+		txt		
+	}
+}
+
+
+pub struct Gamma{
+	bp:Vec<Vec<bool>>,
+	bp_num:Vec<Vec<usize>>,
+}
+impl Gamma{
+	pub fn new(bp_:&Vec<Vec<bool>>)->Self{
+		let n:usize=bp_.len().isqrt();
+		let bp_num_=IOClass::bp_matrix_2usize_block2(&bp_,n);
+		Self{
+			bp:bp_.to_vec(),
+			bp_num:bp_num_,
+		}
+	}
+	pub fn get_table(&self)->String{
+		let mut txt:String=String::new();
+		let n:usize=self.bp[0].len();
+		let n_:usize=self.bp.len().isqrt();
+		txt+="\\begin{table}\n\\centering\n\\begin{tabular}";
+		txt+="{| l |";
+		for i in 0..n{
+			if i%n_==0{
+				txt+="| ";
+			}
+			txt+="r ";
+		}		
+		txt+="| } \\hline \n";
+		txt+="Row $i$ & ";		
+		for j in 0..n_{
+			//txt+=&format!("$m_{{{}}}$ ",j+1);
+			txt+=&format!("\\multicolumn{{{}}}{{c|}}{{$m_{{{}}}$}} ",n_,j+1);
+			if j<n_-1{
+				txt+="& ";
+			}
+			else{
+				txt+="\\\\ \n";
+			}
+		}
+		for i in 0..self.bp.len(){
+			if i%n_==0{
+				txt+="\\hline";
+			}
+			txt+=&i.to_string();
+			txt+="& ";
+			for j in 0..n{
+				if self.bp[i][j]{
+					txt+=&1.to_string();					
+				}
+				else{
+					txt+=&0.to_string();
+				}
+				//txt+=&self.bp[i][j].to_string();
+				//if j<n-1{
+				if j<self.bp[i].len()-1{
+					txt+="& ";
+				}
+				else{
+					txt+="\\\\";					
+					txt+="\n";
+				}
+			}
+		}
+		txt+="\\hline\n";
+		txt+="\\end{tabular}\n";
+		txt+=&format!("\\caption{{Stability matrix $\\Gamma$ for n={}}}\n\\end{{table}}",n_);
+		txt
+	}
+	pub fn get_table_num(&self)->String{
+		let mut txt:String=String::new();
+		let n:usize=self.bp_num[0].len();
+		txt+="\\begin{table}\n\\centering\n\\begin{tabular}";
+		txt+="{l ";
+		for i in 0..n{
+			txt+="r ";
+		}
+		txt+="}\n";
+		txt+="row & ";
+		for j in 0..n{
+			txt+=&format!("$m_{{{}}}$ ",j+1);
+			if j<n-1{
+				txt+="& ";
+			}
+			else{
+				txt+="\\\\ \n";
+			}
+		}
+		for i in 0..self.bp_num.len(){
+			txt+=&i.to_string();
+			txt+="& ";
+			for j in 0..n{
+				txt+=&self.bp_num[i][j].to_string();
+				if j<n-1{
+					txt+="& ";
+				}
+				else{
+					txt+="\\\\ \n";
+				}
+			}
+		}
+		txt+="\\end{tabular}\n\\end{table}";
+		txt
+	}
+}
