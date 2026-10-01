@@ -456,6 +456,83 @@ impl Gamma{
 		txt+=&format!("\\caption{{Stability matrix $\\Gamma$ for n={}}}\n\\end{{table}}",n_);
 		txt
 	}
+
+	pub fn get_table_vertices(&self)->String{
+		let mut txt:String=String::new();
+		let n:usize=self.bp[0].len();
+		let n_:usize=self.bp.len().isqrt();
+		txt+="\\begin{table}\n\\centering\n\\resizebox{\\columnwidth}{!}{\\begin{tabular}";
+		txt+="{| l | c |";
+		for i in 0..n{
+			if i%n_==0{
+				txt+="| ";
+			}
+			txt+="r ";
+		}		
+		txt+="| } \\hline \n";
+		txt+="& & ";		
+		for j in 0..n_{
+			//txt+=&format!("$m_{{{}}}$ ",j+1);
+			txt+=&format!("\\multicolumn{{{}}}{{c|}}{{$m_{{{}}}$}} ",n_,j+1);
+			if j<n_-1{
+				txt+="& ";
+			}
+			else{
+				txt+="\\\\ \\hline \n";
+			}
+		}
+		for row in 0..3{
+			for ampersand in 0..n+1{
+				txt+="& ";
+			}
+			txt+="\\\\ \n";
+		}
+		txt+="$k$ & $v$ & \n";		
+		for i in 0..n{
+			let m:usize=i/n_;
+			let w:usize=i%n_;
+			txt+="\\begin{rotate}{90}\n";
+			txt+=&format!("$(m_{{{}}},w_{{{}}})$\n\\end{{rotate}}\n",m+1,w+1);
+			if i<n-1{
+				txt+="&\n";
+			}
+			else{
+				txt+="\\\\ \n";
+			}
+		}
+		for i in 0..self.bp.len(){
+			if i%n_==0{
+				txt+="\\hline";
+			}
+			txt+=&i.to_string();
+			txt+="& ";
+			let m:usize=i/n_;
+			let w:usize=i%n_;
+			txt+=&format!("$(m_{{{}}},w_{{{}}})$",m+1,w+1);
+			txt+="& ";
+			for j in 0..n{
+				if self.bp[i][j]{
+					txt+=&1.to_string();					
+				}
+				else{
+					txt+=&0.to_string();
+				}
+				//txt+=&self.bp[i][j].to_string();
+				//if j<n-1{
+				if j<self.bp[i].len()-1{
+					txt+="& ";
+				}
+				else{
+					txt+="\\\\";					
+					txt+="\n";
+				}
+			}
+		}
+		txt+="\\hline\n";
+		txt+="\\end{tabular}\n}\n";
+		txt+=&format!("\\caption{{Stability matrix $\\Gamma$ for n={}}}\n\\end{{table}}",n_);
+		txt
+	}
 	pub fn get_table_num(&self)->String{
 		let mut txt:String=String::new();
 		let n:usize=self.bp_num[0].len();
