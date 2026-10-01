@@ -214,6 +214,13 @@ impl IOClass{
 		let bp:Vec<Vec<bool>>=Self::bp_matrix(&adj);
 		bp
 	}
+	pub fn get_all_data_automatically()->(Vec<Vec<usize>>,Vec<Vec<usize>>,Vec<Vec<[usize;2]>>,Vec<Vec<bool>>){
+		let m:Vec<Vec<usize>>=Self::read_txt("pref/m.txt".to_string());
+		let w:Vec<Vec<usize>>=Self::read_txt("pref/w.txt".to_string());
+		let adj:Vec<Vec<[usize;2]>>=Self::create_adj(&m,&w);
+		let bp:Vec<Vec<bool>>=Self::bp_matrix(&adj);
+		(m,w,adj,bp)
+	}
 	pub fn update_bp_manymany(bp_:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
 		let mut bp:Vec<Vec<bool>>=bp_.clone();
 		let n:usize=bp.len().isqrt();
