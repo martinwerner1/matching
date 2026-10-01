@@ -492,7 +492,8 @@ impl Gamma{
 			let m:usize=i/n_;
 			let w:usize=i%n_;
 			txt+="\\begin{rotate}{90}\n";
-			txt+=&format!("$(m_{{{}}},w_{{{}}})$\n\\end{{rotate}}\n",m+1,w+1);
+			//txt+=&format!("$(m_{{{}}},w_{{{}}})$\n\\end{{rotate}}\n",m+1,w+1);
+			txt+=&format!("$\\{{m_{{{}}},w_{{{}}}\\}}$\n\\end{{rotate}}\n",m+1,w+1);
 			if i<n-1{
 				txt+="&\n";
 			}
@@ -508,7 +509,8 @@ impl Gamma{
 			txt+="& ";
 			let m:usize=i/n_;
 			let w:usize=i%n_;
-			txt+=&format!("$(m_{{{}}},w_{{{}}})$",m+1,w+1);
+			//txt+=&format!("$(m_{{{}}},w_{{{}}})$",m+1,w+1);
+			txt+=&format!("$\\{{m_{{{}}},w_{{{}}}\\}}$",m+1,w+1);
 			txt+="& ";
 			for j in 0..n{
 				if self.bp[i][j]{
