@@ -1117,9 +1117,7 @@ impl bitsync{
 					if j<bs{
 						continue;
 					}
-					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if j==(i_b+1)*bs-1 || j==n-1{
-						//println!("increase");
 						i_b+=1;
 						bits_i.push(val as usize);
 						val=0;
@@ -1164,7 +1162,6 @@ impl bitsync{
 					if j<bs{
 						continue;
 					}
-					// BE VERY VERY VERY VEY CAREFUL LATER !!!!!!!!!!!!
 					if (j==(i_b+1)*bs-1) || (j==n-1){
 						i_b+=1;
 						bits_i.push(val as usize);
