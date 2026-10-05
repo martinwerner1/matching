@@ -416,43 +416,7 @@ impl stablesync_n_sided{
 		}
 		true
 	}
-	// TO TEST !!!!!!!
-	/*
-	fn is_stable2(&mut self,a:&Vec<usize>,b:&Vec<usize>)->bool{
-		if !self.check_2_groups_integrity(&a,&b){
-			return false;
-		}
-		let binvec:Vec<[usize;N]>=self.get_all_binvec([0;N],0);
-		//println!("a:{:?}, b:{:?}",a,b);
-		//println!("binvec:\n{:?}",binvec);
-		let mut bpvec:Vec<[usize;N]>=vec![];
-		for i in 1..binvec.len()-1{
-			bpvec.push(self.get_poss_bp(&a,&b,&binvec[i]));
-		}
-		//println!("bpvec:\n{:?}",bpvec);
-		let mut bpvec_endvalues:Vec<[usize;N]>=vec![];
-		for i in 0..bpvec.len(){
-			bpvec_endvalues.push(self.rank.retrieve_endvalue(&bpvec[i].to_vec(),0));
-		}
-		//println!("bpvec_endvalues:\n{:?}",bpvec_endvalues);
-		let val_a:[usize;N]=self.rank.retrieve_endvalue(&a,0);
-		let val_b:[usize;N]=self.rank.retrieve_endvalue(&b,0);
-		//println!("val_a:{:?}, val_b:{:?}",val_a,val_b);
-		for i in 0..bpvec.len(){
-			// the last index is very important!!! the indices of binvec and bpvec_endvalues are completely shifted (by 1)!!!
-			if self.bp_compare2(&val_a,&val_b,&bpvec_endvalues[i],&binvec[i+1]){
-				return false;
-			}
-		}
-		true
-	}
-	*/	
 	fn is_stable3(&mut self,a:&[usize;N],b:&[usize;N])->bool{
-		/*
-		if !self.check_2_groups_integrity(&a,&b){
-			return false;
-		}
-		*/
 		let binvec:Vec<[usize;N]>=self.get_all_binvec([0;N],0);
 		//println!("a:{:?}, b:{:?}",a,b);
 		//println!("binvec:\n{:?}",binvec);
@@ -616,9 +580,6 @@ impl stablesync_n_sided{
 		matches
 	}	
 }
-
-
-
 struct n_sided_matching{
 	m_pref: Vec<Vec<[usize;N]>>,
 	w_pref: Vec<Vec<[usize;N]>>,
@@ -659,38 +620,18 @@ impl n_sided_matching {
 		}
 	}
 	fn init(&mut self,n:usize){
-		/* COMMENTED FOR TESTING PURPOSES !!!!!!!
-		self.m_pref=Self::read_pref2("3D_PREF/m_3dpref.txt".to_string());
-		self.w_pref=Self::read_pref2("3D_PREF/w_3dpref.txt".to_string());
-		self.k_pref=Self::read_pref2("3D_PREF/k_3dpref.txt".to_string());
-		let n:usize=self.m_pref.len();
-		*/
-		//self.pref_notranslated.push(self.m_pref.clone());
-		//self.pref_notranslated.push(self.w_pref.clone());
-		//self.pref_notranslated.push(self.k_pref.clone());
-		//self.adj_matrix(self.pref_notranslated.clone(),n);
-		
-		//	COMMENTED!
-		//self.pref=vec![self.m_pref.clone(),self.w_pref.clone(),self.k_pref.clone()];
-		
-		//let n:usize=7;
 		self.pref=Self::create_random_pref2_stack(n);
 		//self.pref=Self::read_all_pref("kpref/".to_string());
 		self.nvec=vec![n;N];
 		(self.min_n,self.max_n)=self.get_minmax_n(&self.nvec);
 		self.adj_matrix2(n);
 		self.all_groups=self.get_all_poss_groups(&[0;N],0,n);
-		//println!("self.pref_notranslated:\n{:?}",self.pref_notranslated);
-		//self.translate_pref(self.pref_notranslated.clone());
-		println!("self.pref:\n{:?}",self.pref);
-		
 	}
 	fn get_minmax_n(&self,nvec:&Vec<usize>)->(usize,usize){
 		let mut min:usize=nvec[0];
 		let mut max:usize=nvec[0];
 		for i in 1..nvec.len(){
-			if nvec[i]<min{
-				
+			if nvec[i]<min{	
 				min=nvec[i];
 			}
 			if nvec[i]>max{
@@ -714,7 +655,6 @@ impl n_sided_matching {
 	fn read_pref(txtfile:String)->Vec<Vec<[usize;2]>>{
 		let mut pref:Vec<Vec<[usize;2]>>=vec![];		
 		let path = Path::new(&txtfile);
-		//println!("path: {:?}", path);
 		let file = File::open(&path).expect("file not found");
 		let reader = io::BufReader::new(file);
 		for line in reader.lines(){
@@ -722,14 +662,10 @@ impl n_sided_matching {
 			let mut vecchar:Vec<char>=line.expect("").chars().collect();
 			vecchar.remove(0);
 			vecchar.remove(vecchar.len()-1);
-			//println!("last:{:?}",vecchar);
 			let tmp_string:String=vecchar.clone().into_iter().collect();
 			for arr in tmp_string.split(']'){
-				//println!("arr:{:?}",arr);
 				let mut word:String=arr.to_string();
 				let mut word_char:Vec<char>=word.chars().collect();
-				//if arr.contains(&","){
-				//if word.chars().collect().get(0)==','{
 				if arr.len()>0{
 					if word_char[0]==','{
 						//word.remove(0);
@@ -752,10 +688,8 @@ impl n_sided_matching {
 						el[idx]=digit;
 						idx+=1;
 						let part_chars:Vec<char>=word_part.chars().collect();
-						//println!("part:{:?}",part_chars);
 					}
 					pref_i.push(el);
-					//println!("word:{:?}\nword_char:{:?}",word,word_char);
 				}
 			}
 			pref.push(pref_i);			
@@ -766,17 +700,12 @@ impl n_sided_matching {
 	fn show_pref(&self){
 		let agent:[&str;26]=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
 		let sets:[&str;26]=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-
 		println!("SHOW PREFERENCE TABLES");
 		for i in 0..self.pref.len(){
-			//println!("PREFERENCES OF SET {}",i+1);
 			println!("PREFERENCES OF SET << {} >>",sets[i].to_string());
 			for j in 0..self.pref[i].len(){
 				let mut agent_ij:String=agent[i].to_string();
 				agent_ij+=&(j+1).to_string();
-				//println!("AGENT {}: {:?}",j+1,self.pref[i][j]);
-				//println!("AGENT {}: {}",j+1,self.transform_coalition_2string(&self.pref[i][j]));
-				//println!("AGENT {}: {}",j+1,self.transform_match_2string(&self.pref[i][j]));
 				println!("AGENT {}: {}",agent_ij,self.transform_match_2string(&self.pref[i][j]));
 			}
 		}
@@ -794,10 +723,6 @@ impl n_sided_matching {
 	}
 	fn transform_coalition_2string(&self,coalition:&[usize;N])->String{
 		let pattern:[&str;52]=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-		//let mut pattern_string:[String;52]=["".to_string();52];
-		for i in 0..52{
-			//pattern_string[i]=pattern[i].to_string();
-		}
 		if N>52{
 			println!("N IS TOO LARGE FOR HAVING AN OUTPUT VIA LETTERS");
 		}
@@ -813,9 +738,6 @@ impl n_sided_matching {
 		txt
 		
 	}
-	// WRONG!
-	// BE VERY CAREFUL !!!!!!!
-	//fn local_search_blocking_coalition(&self,a:&[usize;N],b:&[usize;N])->bool{
 	fn local_search_blocking_coalition(&self,chain:&Vec<[usize;N]>,b:&[usize;N])->bool{
 		let mut stable:bool=true;
 		for i in 0..chain.len(){
@@ -825,11 +747,6 @@ impl n_sided_matching {
 				if self.pref[j][chain[i][j]].iter().position(|x| x==b) < self.pref[j][chain[i][j]].iter().position(|x| *x==chain[i]){
 					approved+=1;
 				}				
-				/*
-				if position_N(&self.pref[j][chain[i][j]],&b) < position_N(&self.pref[j][chain[i][j]],&b){
-					approved+=1;
-				}
-				*/
 			}
 			if approved==N{
 				return false;
@@ -837,7 +754,6 @@ impl n_sided_matching {
 		}
 		true
 	}
-	
 	// returns true if the chain is stable!
 	fn local_search_blocking_coalition_intersection_wrapper(&self,chain:&Vec<[usize;N]>)->bool{
 		for i in 0..chain.len(){
@@ -886,7 +802,6 @@ impl n_sided_matching {
 	}
 	fn local_search_blocking_coalition_intersection_quota(&self,chain:&Vec<[usize;N]>,idx:usize,intersct:&Vec<[usize;N]>)->bool{
 		if idx==N{
-			//return intersct.clone();
 			if intersct.len()>0{
 				return false;
 			}
@@ -910,7 +825,6 @@ impl n_sided_matching {
 		}		
 		true
 	}	
-
 	fn intersection_usize(vec1:&Vec<usize>,vec2:&Vec<usize>)->Vec<usize>{
 		let mut intersection:Vec<usize>=vec![];
 		for i in 0..vec1.len(){
@@ -932,8 +846,6 @@ impl n_sided_matching {
 	fn deepsearch(&self,chain:&Vec<[usize;N]>,tmp:&[usize;N],idx:usize,nvec:&Vec<usize>)->Vec<Vec<[usize;N]>>{
 		//println!("chain:{:?}, tmp:{:?}, idx:{}, nvec:{:?}, self.min_n:{}, self.max_n:{}",chain,tmp,idx,nvec,self.min_n,self.max_n);
 		let mut matches:Vec<Vec<[usize;N]>>=vec![];
-		
-		// MAX_N ?
 		if chain.len()==self.min_n{
 			return vec![chain.to_vec()];
 		}
@@ -997,18 +909,11 @@ impl n_sided_matching {
 		clean
 	}
 	fn stable_in_corpus(&self,head1:&[usize;N],head2:&[usize;N])->bool{
-		
 		true
 	}
-	
 	fn decompose_pref_str(txt:String)->Vec<String>{
 		let mut strvec:Vec<String>=vec![];
-		/*
-		for i in 0..txt.len(){
-			
-		}
-		*/
-		//for 
+
 		strvec
 	}
 	fn get_prod_from_nvec(&self,nvec:&Vec<usize>)->usize{
@@ -1022,17 +927,13 @@ impl n_sided_matching {
 		let mut prod:usize=self.get_prod_from_nvec(&nvec);		
 		let mut rest:usize=idx;
 		let mut node:[usize;N]=[0;N];
-		//println!("rest:{}, node:{:?}, prod:{}",rest,node,prod);
 		for i in 0..N{			
-			//println!("i:{}, prod:{}, rest:{}, node:{:?}",i,prod,rest,node);
 			prod/=nvec[i];
 			node[i]=rest/prod;
 			rest=rest-node[i]*prod;
-			//println!("i:{}, prod:{}, rest:{}, node:{:?} AFTER",i,prod,rest,node);			
 		}
 		node
 	}
-	
 	fn compose(&self,node:&[usize;N])->usize{
 		let nvec:Vec<usize>=self.nvec.clone();
 		let mut prod:usize=self.get_prod_from_nvec(&nvec);
@@ -1043,7 +944,6 @@ impl n_sided_matching {
 		}
 		idx
 	}
-	
 	fn lp_stability(&self)->Vec<Vec<i8>>{
 		let mut lp:Vec<Vec<i8>>=vec![];
 		let prod:usize=self.get_prod_from_nvec(&self.nvec);
@@ -1068,23 +968,16 @@ impl n_sided_matching {
 		let mut prod:usize=self.get_prod_from_nvec(&nvec);
 		let mut prod_right:usize=prod;
 		let mut prod_left:usize=1;
-		//println!("prod_right:{}, nvec:{:?}",prod_right,nvec);
-		//println!("prod_right:{}, AFTER",prod_right);
-		//println!("PROD: {}",prod);
 		for i in 0..nvec.len(){
-			//println!("i:{}, prod_left:{}, prod_right:{}",i,prod_left,prod_right);
 			let n:usize=nvec[i];
 			prod_right/=n;
 			for j in 0..n{
-				//println!("i:{}, j:{}",i,j);
 				let mut row:Vec<i8>=vec![0;prod];
 				for k in 0..prod_left{
-					//println!("i:{}, j:{}, k:{}",i,j,k);
 					for m in 0..prod_right{
 						let val:usize=k*prod/prod_left+j*prod_right+m;																		
 						row[val]=1;
 					}
-					//printlN!("val:{}, row:{:?}",k*prod/prod_left+j*prod_right,row);
 				}
 				lp.push(row);
 			}			
@@ -1096,15 +989,7 @@ impl n_sided_matching {
 		}
 		lp
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	// get the gamma matrix
+	// Get Gamma/stability matrix
 	fn lp_dual_A_ub(&self)->Vec<Vec<i8>>{
 		let mut lp:Vec<Vec<i8>>=vec![];
 		let prod:usize=self.get_prod_from_nvec(&self.nvec);
@@ -1136,7 +1021,7 @@ impl n_sided_matching {
 		}
 		lp
 	}
-	// get the alpha, beta, ... matrix
+	// Get alpha/beta matrix
 	fn lp_dual_alphamatrix(&self)->Vec<Vec<i8>>{
 		let mut lp:Vec<Vec<i8>>=vec![];
 		let prod:usize=self.get_prod_from_nvec(&self.nvec);
@@ -1174,14 +1059,11 @@ impl n_sided_matching {
 		let mut row:Vec<i8>=vec![0;sum];
 		let mut tmp_sum:usize=0;
 		for i in 0..N{
-			// be very careful!
-			//idx+=coalition[i];
 			row[tmp_sum+coalition[i]]=1;
 			tmp_sum+=nvec[i];
 		}
 		row
 	}
-
 	// Both matrices A_ub and alphavec will be merged for the constraints.
 	fn lp_dual_combine_A_ub_alphavec(&self)->Vec<Vec<i8>>{
 		let mut lp:Vec<Vec<i8>>=vec![];
@@ -1195,7 +1077,6 @@ impl n_sided_matching {
 		}
 		lp
 	}
-	// BUGGY ! SOLUTIONS NOT CORRECT!
 	fn lp_dual_lp_highs_run(&self){
 		let lp:Vec<Vec<i8>>=self.lp_dual_combine_A_ub_alphavec();
 		let c:Vec<i8>=self.lp_dual_problemvariables();
@@ -1205,7 +1086,6 @@ impl n_sided_matching {
 			println!("{:?}",lp[i]);
 		}
 		println!("PROBLEM VARIABLES\n{:?}",c);
-		//let c:Vec<usize>=vec![1;A_eq[0].len()];
 		let mut pb = RowProblem::new();		
 		let mut vars:Vec<Col>=vec![];
 		for i in 0..c.len(){
@@ -1215,59 +1095,27 @@ impl n_sided_matching {
 			let mut row:Vec<(Col,f64)>=vec![];
 			for j in 0..lp[i].len(){
 				row.push((vars[j],lp[i][j] as f64));
-			}
-			//pb.add_row(..=b_eq[i] as f64,&row);	
-			//pb.add_row(1..1,&row);	
+			}	
 			pb.add_row(1..,&row);	
 		}
-		/*
-		for i in 0..A_eq_toggle.len(){
-			let mut row:Vec<(Col,f64)>=vec![];
-			for j in 0..A_eq_toggle[i].len(){
-				row.push((vars[j],A_eq_toggle[i][j] as f64));
-			}
-			//pb.add_row(..=b_eq[i] as f64,&row);	
-			pb.add_row(..m.len() as f64 -1.0,&row);	
-		}
-		*/
-		// the off vector holds if we have a quadratic matrix with n x n rows/columns!
-		//let mut off:Vec<usize>=vec![];
-		
-
 		println!("DUAL MATCHING BP LP HIGHS");
 		//let solution = pb.optimise(Sense::Maximise).solve().get_solution();
 		let solution = pb.optimise(Sense::Minimise).solve().get_solution();
 		println!("DUAL SOLUTION:\n{:?}",solution);		
-		//let matchres:Vec<usize>=transform_to_match(solution.columns(),mlen);
-		//let matchres:Vec<[usize;N]>=self.transform_lp_2_node(&solution.columns().to_vec());
 		let matchres:Vec<[usize;N]>=self.transform_lp_2_node(&solution.dual_rows().to_vec());
-		println!("DUAL MATCH RESULT:\n{:?}",matchres);
-		
-		// DO IT CORRECTLY!
+		println!("DUAL MATCH RESULT:\n{:?}",matchres);		
 		if matchres.len()==4{
 			let is_stable:bool=self.local_search_blocking_coalition_intersection_wrapper(&matchres);
 			println!("DUAL SOLUTION IS: {}",is_stable);
 		}
-		//let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
 		let pos_idx:Vec<usize>=vec![];
-		
 	}
-	//fn lp_run(&self,lp_ge:&Vec<Vec<i8>>,lp_eq:&Vec<Vec<i8>>){
 	
 	fn lp_run(&self){
-//fn stability_bp_LP_HIGHS_IMPORTANT_fractional_test()->Vec<usize>{
 		println!("####### STABILITY BP HIGHS FRACTIONAL TEST");
-		println!("INTEGER SOLUTION BUT NO FRACTIONAL SOLUTION UNFORTUNATELY!");
-
-		//let A_ub:Vec<Vec<i8>>=lp_ge.clone();
+		println!("INTEGER SOLUTION BUT NO FRACTIONAL SOLUTION!");
 		let A_ub:Vec<Vec<i8>>=self.lp_stability();
-		//let (mut c,mat):(Vec<i8>,Vec<Vec<i8>>)=self.fractional_setup_rothblum93_3();
-		//let A_eq:Vec<Vec<usize>>=matchLP.get_a_eq();
-		//let A_eq:Vec<Vec<usize>>=lp_eq.clone();
-		//let A_eq:Vec<Vec<i8>>=lp_eq.clone();
 		let A_eq:Vec<Vec<i8>>=self.lp_eq(&self.nvec);
-		//let (m_A_eq,w_A_eq):(Vec<Vec<usize>>,Vec<Vec<usize>>)=matchLP.get_a_eq_2();
-		//let c:Vec<usize>=vec![1;lp_ge[0].len()];
 		let c:Vec<usize>=vec![1;A_eq[0].len()];
 		let mut pb = RowProblem::new();		
 		let mut vars:Vec<Col>=vec![];
@@ -1278,98 +1126,28 @@ impl n_sided_matching {
 			let mut row:Vec<(Col,f64)>=vec![];
 			for j in 0..A_eq[i].len(){
 				row.push((vars[j],A_eq[i][j] as f64));
-			}
-			//pb.add_row(..=b_eq[i] as f64,&row);	
-			//pb.add_row(1..1,&row);	
+			}	
 			pb.add_row(..1,&row);	
 		}
-		/*
-		for i in 0..A_eq_toggle.len(){
-			let mut row:Vec<(Col,f64)>=vec![];
-			for j in 0..A_eq_toggle[i].len(){
-				row.push((vars[j],A_eq_toggle[i][j] as f64));
-			}
-			//pb.add_row(..=b_eq[i] as f64,&row);	
-			pb.add_row(..m.len() as f64 -1.0,&row);	
-		}
-		*/
-		// the off vector holds if we have a quadratic matrix with n x n rows/columns!
-		//let mut off:Vec<usize>=vec![];
 		for i in 0..A_ub.len(){
-			//if !off.contains(&i){
 				let mut row:Vec<(Col,f64)>=vec![];
 				for j in 0..A_ub[i].len(){
 					row.push((vars[j],A_ub[i][j] as f64));
 				}
-				//pb.add_row(..0,&row);	
-				//pb.add_row(..0,&row);	
-				//pb.add_row(..m.len() as f64,&row);	
-				//pb.add_row(0.0..(m.len()-1) as f64,&row);	
-				
-
-				// FRACTIONAL VALUES !!!!!!! VERY VERY IMPORTANT !!!!!!!
 				pb.add_row(1.0..,&row);	
-				
-				//pb.add_row(..1.0,&row);	
-			//}
 		}
-
 		println!("MATCHING BP LP HIGHS");
 		let solution = pb.optimise(Sense::Maximise).solve().get_solution();
 		println!("SOLUTION:\n{:?}",solution);		
-		//let matchres:Vec<usize>=transform_to_match(solution.columns(),mlen);
 		let matchres:Vec<[usize;N]>=self.transform_lp_2_node(&solution.columns().to_vec());
 		println!("MATCH RESULT:\n{:?}",matchres);
 		
-		// DO IT CORRECTLY!
 		if matchres.len()==4{
 			let is_stable:bool=self.local_search_blocking_coalition_intersection_wrapper(&matchres);
 			println!("SOLUTION IS: {}",is_stable);
 		}
-		//let pos_idx:Vec<usize>=get_positive_idx(&solution.columns().to_vec());
 		let pos_idx:Vec<usize>=vec![];
-		//pos_idx	
-//}				
 	}
-	
-	/*
-	fn lp_simplex_run(&self){
-		println!("LP SIMPLEX RUN");
-		let program = Simplex::minimize(&vec![-3.0, 1.0, -2.0]).with(vec![
-			SimplexConstraint::LessThan(vec![2.0, -2.0, 3.0], 5.0),
-			SimplexConstraint::LessThan(vec![1.0, 1.0, -1.0], 3.0),
-			SimplexConstraint::LessThan(vec![1.0, -1.0, 1.0], 2.0),
-		]);
-		let simplex = program.unwrap();		
-		let A_eq_=self.lp_eq(&self.nvec);
-		let A_ub_=self.lp_stability();
-		let A_eq:Vec<Vec<f64>>=mat_i8_2_f64(&A_eq_);
-		let A_ub=mat_i8_2_f64(&A_ub_);
-		//let mut c:Vec<f64>=vec![1.0;A_eq[0].len()];
-		let mut c:Vec<f64>=vec![-1.0;A_eq[0].len()];
-		
-		let mut constraints:Vec<SimplexConstraint>=vec![];
-		// A_ub
-		for i in 0..A_ub.len(){
-			//constraints.push(SimplexConstraint::GreaterThan(A_ub[i],1.0));
-			constraints.push(SimplexConstraint::LessThan(vec_switch_2_negativity(&A_ub[i]),-1.0));
-		}
-		// A_eq
-		for i in 0..A_eq.len(){
-			//constraints.push(SimplexConstraint::Equal(A_eq[i],1.0));			
-			constraints.push(SimplexConstraint::Equal(vec_i8_2_f64(&A_eq_[i]),1.0));			
-		}
-		//let lp_program=Simplex::maximize(&c).with(constraints);
-		let lp_program=Simplex::minimize(&c).with(constraints);
-		let mut lp_simplex=lp_program.unwrap();
-		println!("SIMPLEX SOLUTION:\n{:?}",lp_simplex.solve());
-		let mut solution:Vec<Option<f64>>=vec![];
-		for i in 0..A_eq[0].len(){
-			solution.push(lp_simplex.get_var(i));
-		}
-		println!("SIMPLEX SOLUTION VAR:\n{:?}",solution);
-	}
-	*/
 	fn lp_rustplex_run(&self)->Result<(), SolverError>{
 		let mut model=Model::new();
 		let A_eq=self.lp_eq(&self.nvec);
