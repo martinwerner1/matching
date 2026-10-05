@@ -25,6 +25,9 @@ use highs::*;
 use std::io::Write;
 use bitvec::prelude::BitVec;
 use bitvec::prelude::*;
+use std::time::{Duration, SystemTime};
+use std::thread::sleep;
+use std::process;
 
 
 
@@ -33,6 +36,12 @@ const N:usize=4;
 fn main(){
 	test_deepsearch_n_sided();
 }
+// helper function for monitoring performance task
+fn measure_time( elap: Duration) {
+	println!("\nTime needed for processing (in ms): {:?}\n", elap.as_millis());
+}
+
+
 
 pub fn test_deepsearch_n_sided(){
 	let mut n_sided:n_sided_matching=n_sided_matching::new();
@@ -63,14 +72,45 @@ pub fn test_deepsearch_n_sided(){
 	let n:usize=n_sided.nvec[0];
 	println!("##########################################################\n");
 	println!("N-SIDED MATCHING (N={}, n={} with random preference lists)!\n",N,n);
-	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
+
+
+	/*
+	let time_ds1: SystemTime = SystemTime::now();
+	//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
+	let elapsed_ds1 = time_ds1.elapsed().unwrap();	
+	measure_time(elapsed_ds1);		
+	*/
+
+	//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch2(&vec![],&[0;N],0,0,&n_sided.nvec);
+
+	/*
 	let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
-	println!("ALL STABLE MATCHES:");
+	println!("ALL STABLE MATCHES DEEPSEARCH 1:");
 	//for i in 0..matches_deepsearch.len(){
 	for i in 0..matches_clean.len(){
 		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
 		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
 		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
+	}
+	println!();
+	*/
+
+	let time_ds2: SystemTime = SystemTime::now();
+	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch2_wrapper();
+	let elapsed_ds2 = time_ds2.elapsed().unwrap();	
+	//measure_time(elapsed_ds2);		
+
+
+
+	//let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
+	//let matches_clean:Vec<Vec<[usize;N]>>=matches_deepsearch.clone();
+	println!("ALL STABLE MATCHES:");
+	for i in 0..matches_deepsearch.len(){
+	//for i in 0..matches_clean.len(){
+		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
+		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
+		//print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
+		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_deepsearch[i]));
 	}
 	
 }
@@ -587,6 +627,7 @@ struct n_sided_matching{
 	//pref_notranslated: Vec<Vec<Vec<[usize;N-1]>>>,
 	pref: Vec<Vec<Vec<[usize;N]>>>,
 	nvec:Vec<usize>,
+	prodvec:Vec<usize>,
 	min_n:usize,
 	max_n:usize,
 	adj: rank_tree,
@@ -607,6 +648,7 @@ impl n_sided_matching {
 			//pref_notranslated:vec![],
 			pref:vec![],
 			nvec:vec![],
+			prodvec:vec![],
 			min_n:0,
 			max_n:1,
 			adj:rank_tree::new(),
@@ -623,6 +665,7 @@ impl n_sided_matching {
 		self.pref=Self::create_random_pref2_stack(n);
 		//self.pref=Self::read_all_pref("kpref/".to_string());
 		self.nvec=vec![n;N];
+		self.prodvec=self.get_prodvec_from_nvec(&self.nvec);
 		(self.min_n,self.max_n)=self.get_minmax_n(&self.nvec);
 		self.adj_matrix2(n);
 		self.all_groups=self.get_all_poss_groups(&[0;N],0,n);
@@ -882,6 +925,157 @@ impl n_sided_matching {
 		}
 		matches
 	}
+	fn deepsearch2_wrapper(&self)->Vec<Vec<[usize;N]>>{
+		//println!("nvec:{:?}, prodvec:{:?}",self.nvec,self.prodvec);
+		let mut matches:Vec<Vec<[usize;N]>>=vec![];
+		//for y in 0..self.prodvec[1]{
+			//matches.append(&mut self.deepsearch2(&vec![],y,&self.nvec));
+			matches.append(&mut self.deepsearch4(&vec![],0,&self.nvec));
+		//}
+		matches
+	}
+	fn deepsearch2(&self,chain:&Vec<[usize;N]>,y:usize,nvec:&Vec<usize>)->Vec<Vec<[usize;N]>>{
+		//println!("y:{}",y);
+		let mut matches:Vec<Vec<[usize;N]>>=vec![];
+		if chain.len()==self.min_n{
+			return vec![chain.to_vec()];
+		}
+		else{
+			let dec_coalition:[usize;N]=self.decompose2(y,&nvec);
+			println!("y:{}, coalition:{:?}",y,dec_coalition);
+			if self.check_integrity(&chain,&dec_coalition){
+			//if idx==N{
+				//println!("integrity ok!");
+				if chain.len()==0{
+						//matches.append(&mut self.deepsearch2(&vec![*tmp],y+1,&nvec));					
+						matches.append(&mut self.deepsearch2(&vec![dec_coalition],y+1,&nvec));					
+				}
+				else{		
+					let mut tmp_chain:Vec<[usize;N]>=chain.clone();
+					//tmp_chain.push(*tmp);
+					tmp_chain.push(dec_coalition);
+					if self.local_search_blocking_coalition_intersection_wrapper(&tmp_chain){
+						//let mut new_y:usize=y/self.prodvec[1]+self.prodvec[1];
+						//let mut new_y:usize=((y/self.prodvec[1])+1)*self.prodvec[1];
+						//println!("old_y:{}, new_y:{}",y,new_y);
+						//if new_y<self.prodvec[0]-1{
+						if y<self.prodvec[0]-1{
+							//matches.append(&mut self.deepsearch2(&tmp_chain,new_y,&nvec));
+							matches.append(&mut self.deepsearch2(&tmp_chain,y+1,&nvec));
+						}
+					}
+					else{
+						if y<self.prodvec[0]-1{
+							matches.append(&mut self.deepsearch2(&chain,y+1,&nvec));
+						}
+					}
+				}
+			}			
+			else{
+				//println!("integrity not ok: chain:{:?}, coalition:{:?}",chain,dec_coalition);
+				/*
+				for i in 0..nvec[idx]{
+					let mut is_ok:bool=true;
+					for j in 0..chain.len(){
+						if chain[j][idx]==i{
+							is_ok=false;
+							break;
+						}
+					}
+					if is_ok{
+						let mut new_tmp:[usize;N]=tmp.clone();
+						new_tmp[idx]=i;
+						matches.append(&mut self.deepsearch2(&chain,&new_tmp,y,idx+1,&nvec));
+					}
+				}
+				*/
+				//println!("else!");
+				if y<self.prodvec[0]-1{
+					matches.append(&mut self.deepsearch2(&chain,y+1,&nvec));
+				}
+			}
+		}
+		matches
+	}
+	fn deepsearch3(&self,chain:&Vec<[usize;N]>,y:usize,idx:usize,nvec:&Vec<usize>)->Vec<Vec<[usize;N]>>{
+		//println!("y:{}",y);
+		println!("DEEPSEARCH 3");
+		let mut matches:Vec<Vec<[usize;N]>>=vec![];
+		if chain.len()==self.min_n{
+			return vec![chain.to_vec()];
+		}
+		else{
+			if y<self.prodvec[0]{
+				let dec_coalition:[usize;N]=self.decompose2(y,&nvec);
+				//println!("y:{}, coalition:{:?}",y,dec_coalition);
+				if self.check_integrity(&chain,&dec_coalition){
+				//if idx==N{
+					if chain.len()==0{
+						let mut new_y:usize=(idx+1)*self.prodvec[1];
+						//matches.append(&mut self.deepsearch3(&vec![dec_coalition],y+1,idx+1,&nvec));					
+						matches.append(&mut self.deepsearch3(&vec![dec_coalition],new_y,idx+1,&nvec));					
+					}
+					else{		
+						let mut tmp_chain:Vec<[usize;N]>=chain.clone();
+						tmp_chain.push(dec_coalition);
+						if self.local_search_blocking_coalition_intersection_wrapper(&tmp_chain){
+							let mut new_y:usize=(idx+1)*self.prodvec[1];
+
+							//if new_y<self.prodvec[0]-1{
+							//if y<self.prodvec[0]-1{
+								//matches.append(&mut self.deepsearch2(&tmp_chain,new_y,&nvec));
+							//matches.append(&mut self.deepsearch3(&tmp_chain,y+1,idx+1,&nvec));
+							matches.append(&mut self.deepsearch3(&tmp_chain,new_y,idx+1,&nvec));
+							//}
+						}
+						else{
+							//if y<self.prodvec[0]-1{
+								matches.append(&mut self.deepsearch3(&chain,y+1,idx,&nvec));
+							//}
+						}
+					}
+				}			
+				else{
+					//println!("integrity not ok: chain:{:?}, coalition:{:?}",chain,dec_coalition);
+					//if y<self.prodvec[0]-1{
+						matches.append(&mut self.deepsearch3(&chain,y+1,idx,&nvec));
+					//}
+				}
+			}
+		}
+		matches
+	}
+	fn deepsearch4(&self,chain:&Vec<[usize;N]>,idx:usize,nvec:&Vec<usize>)->Vec<Vec<[usize;N]>>{
+		//println!("y:{}",y);
+		//println!("DEEPSEARCH 4");
+		let mut matches:Vec<Vec<[usize;N]>>=vec![];
+		if chain.len()==self.min_n{
+			return vec![chain.to_vec()];
+		}
+		else{
+			if idx<N{
+				for y in idx*self.prodvec[1]..(idx+1)*self.prodvec[1]{
+					let dec_coalition:[usize;N]=self.decompose2(y,&nvec);
+					//println!("y:{}, dec_coalition:{:?}",y,dec_coalition);
+					if self.check_integrity(&chain,&dec_coalition){
+						if chain.len()==0{
+							matches.append(&mut self.deepsearch4(&vec![dec_coalition],idx+1,&nvec));					
+						}
+						else{		
+							let mut tmp_chain:Vec<[usize;N]>=chain.clone();
+							tmp_chain.push(dec_coalition);
+							if self.local_search_blocking_coalition_intersection_wrapper(&tmp_chain){							
+								matches.append(&mut self.deepsearch4(&tmp_chain,idx+1,&nvec));
+							}
+						}
+					}
+				}			
+			}
+		}
+		matches
+	}
+
+
 	fn remove_multiple_solutions(&self,matches:&Vec<Vec<[usize;N]>>)->Vec<Vec<[usize;N]>>{
 		let mut clean:Vec<Vec<[usize;N]>>=vec![];
 		if matches.len()>0{
@@ -923,6 +1117,21 @@ impl n_sided_matching {
 		}
 		prod
 	}
+
+	// GET SEQUENTIAL PRODUCTS (PI S_i) FROM NVEC: E.G. NVEC=[4,3,2,7] -> PROD_VEC=[168,42,14,7,1]
+	// THE FIRST VALUE IS MAX_VALUE (168), TO BE OMITTED! THE REST IS THE REAL PROD_VEC.
+	fn get_prodvec_from_nvec(&self,nvec:&Vec<usize>)->Vec<usize>{
+		let mut prodvec:Vec<usize>=vec![1];
+		let nvec_len:usize=nvec.len();
+		for k in 0..nvec.len(){
+			let digit:usize=nvec[nvec_len-k-1];
+			let cur_prod:usize=prodvec[0];
+			prodvec.insert(0,digit*cur_prod);
+		}
+		//let max_val:usize=prodvec[0];
+		//prodvec.remove(0);
+		prodvec
+	}
 	fn decompose(&self,idx:usize,nvec:&Vec<usize>)->[usize;N]{
 		let mut prod:usize=self.get_prod_from_nvec(&nvec);		
 		let mut rest:usize=idx;
@@ -933,6 +1142,30 @@ impl n_sided_matching {
 			rest=rest-node[i]*prod;
 		}
 		node
+	}
+	// CORRECT FORM!
+	fn decompose2(&self,y:usize,nvec:&Vec<usize>)->[usize;N]{
+		let mut coalition:[usize;N]=[0;N];
+		let mut prodvec:Vec<usize>=self.get_prodvec_from_nvec(&nvec);
+		let maxval:usize=prodvec[0];
+		prodvec.remove(0);
+		assert!(y<maxval);
+		let mut rest:usize=y;
+		for i in 0..N{
+			coalition[i]=rest/prodvec[i];
+			rest-=coalition[i]*prodvec[i];
+		}
+		assert!(rest==0);
+		coalition
+	}
+	fn compose2(&self,coalition:&[usize;N],nvec:&Vec<usize>)->usize{
+		let mut y:usize=0;
+		let mut prodvec:Vec<usize>=self.get_prodvec_from_nvec(&nvec);
+		let maxval:usize=prodvec[0];
+		prodvec.remove(0);
+		
+		assert!(y<maxval);
+		y
 	}
 	fn compose(&self,node:&[usize;N])->usize{
 		let nvec:Vec<usize>=self.nvec.clone();
@@ -1211,51 +1444,37 @@ impl n_sided_matching {
 		// BOTH WORKS!
 		let mut var:Vec<rustplex::modeling::variable::Variable>=vec![];
 		let mut var_key:Vec<VariableKey>=vec![];
-		//let key:rustplex::common::expression::ExprVariable=VariableKey::new();
-		//let mut var_key:Vec<VariableKey>=vec![VariableKey::new()];
 		let mut var_bd:Vec<rustplex::modeling::variable::VariableBuilder>=vec![];
 		var_key.push(x1);
-		
-
 		// 3. Set the objective function: Maximize x1 + x2 + x3 - x4
 		model.set_objective(
 			Maximize,
 			x1 + x2 + x3 - x4,
 		);
-		
 		let mut own_expr:LinearExpr<VariableKey>=LinearExpr::new();
 		own_expr+=var_key[0].into();
-
 		// 4. Add constraints using natural syntax
 		//    x1 + x3 <= x2
 		model.add_constraint(x1 + x3).le(x2);
-
 		//    x2 + x3 == 5.0
 		model.add_constraint(x2 + x3).eq(5.0);
-
 		//    x4 + x1 >= 10.0
 		model.add_constraint(x4 + x1).ge(10.0);
-
 		// 5. Solve the model
 		//let solution = model.solve()?;
 		let solution = model.solve()?;
-
 		// 6. Inspect the results
 		if solution.status().is_optimal() {
 			println!("Objective Value: {}", solution.objective_value().unwrap());
-
 			// Retrieve variable values safely
 			println!("x1 = {}", solution[x1]);
 			println!("x2 = {}", solution[x2]);
-
 			println!("var_key[0]:{:?}",solution[var_key[0]]);
-
 			// Print full detailed report
 			println!("{}", model.format(&solution));
 		} else {
 			println!("Solver failed: {}", solution.status());
 		}
-
 		Ok(())
 		//}
 	}
@@ -1493,7 +1712,7 @@ impl n_sided_matching {
 	fn check_pref_integrity(){
 		
 	}
-	// N-sided matching: Tree structure! later....!!!!!!! NOW!!!!!!!
+	// N-sided matching: Tree structure! later....? NOW!!!!!!!
 	// WORKS!!!!!!!
 	//fn adj_matrix(&mut self,pref:&Vec<Vec<Vec<[usize;N_SIDED-1]>>>,n:usize){
 	fn adj_matrix(&mut self,pref:Vec<Vec<Vec<[usize;N-1]>>>,n:usize){
@@ -1583,10 +1802,7 @@ impl n_sided_matching {
 	}
 	//fn check_2_groups_integrity(&self,a:[usize;N],b:&[usize;N])->bool{
 	fn check_2_groups_integrity(&self,a:&Vec<usize>,b:&Vec<usize>)->bool{
-		//println!("a:{:?}, b:{:?}",a,b);
 		for i in 0..N{
-			//println!("i:{}",i);
-			//println!("a[{}]:{}, b[{}]:{}",i,a[i],i,b[i]);
 			if a[i]==b[i]{
 				return false;
 			}
@@ -1610,7 +1826,6 @@ impl n_sided_matching {
 		true
 	}
 	fn bp_compare2(&self,vala:&[usize;N],valb:&[usize;N],val_bp:&[usize;N],binvec:&[usize;N])->bool{
-		//:{:?}",binvec);
 		for i in 0..binvec.len(){
 			if binvec[i]==0{
 				if val_bp[i]>vala[i]{
@@ -1625,9 +1840,8 @@ impl n_sided_matching {
 		}
 		true
 	}
-	
-	//fn stable(&mut self,a:&[usize;N_SIDED],b:&[usize;N_SIDED]){
-	// VERY BUGGY !!!!!!!
+
+	// BG!
 	fn is_stable(&mut self,a:&Vec<usize>,b:&Vec<usize>)->bool{
 		if !self.check_2_groups_integrity(&a,&b){
 			return false;
@@ -1659,21 +1873,17 @@ impl n_sided_matching {
 			return false;
 		}
 		let binvec:Vec<[usize;N]>=self.get_all_binvec([0;N],0);
-		//println!("a:{:?}, b:{:?}",a,b);
-		//println!("binvec:\n{:?}",binvec);
+
 		let mut bpvec:Vec<[usize;N]>=vec![];
 		for i in 1..binvec.len()-1{
 			bpvec.push(self.get_poss_bp(&a,&b,&binvec[i]));
 		}
-		//println!("bpvec:\n{:?}",bpvec);
 		let mut bpvec_endvalues:Vec<[usize;N]>=vec![];
 		for i in 0..bpvec.len(){
 			bpvec_endvalues.push(self.adj.retrieve_endvalue(&bpvec[i].to_vec(),0));
 		}
-		//println!("bpvec_endvalues:\n{:?}",bpvec_endvalues);
 		let val_a:[usize;N]=self.adj.retrieve_endvalue(&a,0);
 		let val_b:[usize;N]=self.adj.retrieve_endvalue(&b,0);
-		//println!("val_a:{:?}, val_b:{:?}",val_a,val_b);
 		for i in 0..bpvec.len(){
 			// the last index is very important!!! the indices of binvec and bpvec_endvalues are completely shifted (by 1)!!!
 			if self.bp_compare2(&val_a,&val_b,&bpvec_endvalues[i],&binvec[i+1]){
@@ -1702,7 +1912,6 @@ impl n_sided_matching {
 			return res;
 		}
 	}
-	//fn check_group_integrity(&self,groupvec:&Vec<Vec<[usize;N]>>,group:[usize;N])->bool{
 	fn check_group_integrity(&self,group_arr:&mut [Option<Vec<usize>>;N],group:[usize;N])->bool{
 		let mut ok:bool=true;
 		
@@ -1732,6 +1941,21 @@ impl n_sided_matching {
 		}
 		ok
 	}
+	// for one-to-one N-sided matching. An agent appears only once in a chain!
+	fn check_integrity(&self,chain:&Vec<[usize;N]>,coalition:&[usize;N])->bool{
+		for i in 0..N{
+			for j in 0..chain.len(){
+				if chain[j][i]==coalition[i]{
+					//println!("integrity false: chain:{:?}, coalition:{:?}",chain,coalition);
+					return false;
+				}
+			}
+		}
+		//println!("integrity true: chain:{:?}, coalition:{:?}",chain,coalition);
+		true
+	}
+	
+	
 	// assumption: n is equal for all sets S1,S2,....,S_N!
 	fn get_all_poss_groups(&mut self,tmp:&[usize;N],cursor:usize,n:usize)->Vec<[usize;N]>{
 		let mut res:Vec<[usize;N]>=vec![];
@@ -1768,73 +1992,40 @@ impl n_sided_matching {
 		stabm=bp_matrix_half(&stabm);
 		stabm
 	}
-	//fn convert_stability_matrix(&mut self,stabm:&Vec<Vec<bool>>/*,bit:usize,binvec:&Vec<Vec<usize>>*/)->Vec<usize>{
 	fn convert_stability_matrix(&mut self,stabm:&Vec<Vec<bool>>/*,bit:usize,binvec:&Vec<Vec<usize>>*/,bitlen:usize)->Vec<Vec<usize>>{
-		//let bitlen:usize=stabm.len();
-		//let bitlen:usize=8;
-		//let mut stabm_num:Vec<usize>=vec![];
 		let mut stabm_num:Vec<Vec<usize>>=vec![];
-		//let stabm_bit:Vec<Vec<usize>>=
 		let bitvec:Vec<Vec<usize>>=self.get_all_binvec_vec(&vec![],0,bitlen);
-		//let mut bitvec_small:Vec<Vec<usize>>=vec![];
 		let mut upperbound:usize=stabm.len()/bitlen;
 		let mut modulo:usize=stabm.len()-upperbound*bitlen;
 		if modulo>0{
 			upperbound+=1;
-			//bitvec_small=self.get_all_binvec_vec(&vec![],0,modulo);
 		}
-		let mut bool_vec:Vec<Vec<bool>>=vec![];
-		
+		let mut bool_vec:Vec<Vec<bool>>=vec![];		
 		// bool_vec_small should be avoided since it leads to completely different values!
-		//let mut bool_vec_small:Vec<Vec<bool>>=vec![];
 		for i in 0..bitvec.len(){
 			let bool_vec_i:Vec<bool>=self.transform_bin2bool_vec(&bitvec[i]);
 			bool_vec.push(bool_vec_i);
 		}
 		self.bitvec_sync=bitvec.clone();
 		self.boolvec_sync=bool_vec.clone();
-		self.ordervec_sync=self.get_ordervec(&self.boolvec_sync);
-		/*
-		for i in 0..bitvec_small.len(){
-			let bool_vec_small_i:Vec<bool>=self.transform_bin2bool_vec(&bitvec_small[i]);
-			bool_vec_small.push(bool_vec_small_i);
-		}
-		*/		
+		self.ordervec_sync=self.get_ordervec(&self.boolvec_sync);	
 		for i in 0..stabm.len(){
 			// this was for Vec<usize>, i.e. the whole bool row was represented as ONE usize vale, not a vec!
-			/*
-			let pos:usize=bool_vec.iter().position(|x| *x==stabm[i]).unwrap();
-			stabm_num.push(pos);
-			*/
-			
-			//  THINK TWICE!!!
+			//  TT!!!
 			let mut stabm_i:Vec<usize>=vec![];
-			// BE CAREFUL !!! THINK OF THE REST!!!!
+			// BC!
 			//if stabm.len()/bitlen-upperbound>0{
 			println!("upperbound:{}, modulo:{}, stabm.len()/bitlen:{}",upperbound,modulo,stabm.len()/bitlen);
-			//for j in 0..stabm.len()/bitlen{
 			for j in 0..upperbound{
 				println!("stabm.len():{}, bitlen:{}, i:{}, j:{}",stabm.len(),bitlen,i,j);
 				let mut upper_slice:usize=(j+1)*bitlen;
 				if j==upperbound-1 && modulo>0{
-					//upper_slice=j*bitlen+modulo;
 					upper_slice=stabm.len();
 				}
-				//let slice:Vec<bool>=stabm[i][j*bitlen..(j+1)*bitlen].to_vec();
 				let mut slice:Vec<bool>=stabm[i][j*bitlen..upper_slice].to_vec();
 				let mut pos:usize=0;
 				println!("slice:{:?}",slice);
-				//println!("boolvec_small:\n{:?}",bool_vec_small);
-				/*
 				if j==upperbound-1 && modulo>0{
-					pos=bool_vec_small.iter().position(|x| *x==slice).unwrap();					
-				}
-				else{
-					pos=bool_vec.iter().position(|x| *x==slice).unwrap();
-				}
-				*/
-				if j==upperbound-1 && modulo>0{
-					//pos=bool_vec_small.iter().position(|x| *x==slice).unwrap();
 					for k in 0..bitlen-modulo{
 						slice.push(false);
 					}
@@ -1970,11 +2161,7 @@ impl n_sided_matching {
 		matches
 	}	
 	fn stable_sync_bs_general(&self,bp:&Vec<Vec<usize>>,bs:usize,n:usize)->Vec<Vec<usize>>{
-		//println!("self.bitvec:\n{:?}",self.bitvec_sync);
-		//println!("self.boolvec:\n{:?}",self.boolvec_sync);
-		//println!("self.ordervec:\n{:?}",self.ordervec_sync);
 		let mut matches:Vec<Vec<usize>>=vec![];
-		//let n:usize=bp.len().isqrt();
 		for i in 0..bp.len()-n{			
 			let tmp:Vec<usize>=vec![i];
 			println!("BS TEST {}",i);
@@ -2053,7 +2240,6 @@ impl n_sided_matching {
 						let pos_curr:usize=self.pref[i][cand[i]].iter().position(|&x| x==curr_grp).unwrap();
 						let pos_cand:usize=self.pref[i][cand[i]].iter().position(|&x| x==cand).unwrap();
 						// without inventing the ideo of net gain!
-						
 						if pos_curr<pos_cand{
 							acc=false;
 							break;
@@ -2259,7 +2445,6 @@ impl rank_tree{
 		//endvalue
 	}	
 }
-
 fn test_samples(){
 	let pref=samples::create_random_pref_arr(7,0);
 	let pref2=samples::create_random_pref_arr(7,1);
@@ -2302,8 +2487,7 @@ impl samples{
 		let mut pref:Vec<Vec<[usize;N]>>=vec![];
 		for i in 0..n{
 			//let mut pref_i:Vec<[usize;N]>=vec![];
-			let mut pref_i:Vec<[usize;N]>=Self::create_all_groups(&[0;N],n,0,cursor,i);
-			
+			let mut pref_i:Vec<[usize;N]>=Self::create_all_groups(&[0;N],n,0,cursor,i);	
 			/*
 			for j in 0..n{
 				let mut arr:[usize;N]=[n;N];
@@ -2385,8 +2569,6 @@ impl samples{
 			txt+=&Self::write_pref_str(&sample[i]);
 			txt+="\n";
 		}
-
-
 		let mut fs = File::create(path);
 		fs.expect("Problem with the file!").write_all(txt.as_bytes());		
 		txt
@@ -2415,7 +2597,6 @@ impl samples{
 	}
 	fn read_sample_file(txtfile:String)->Vec<Vec<Vec<Vec<[usize;N]>>>>{
 		let mut sample:Vec<Vec<Vec<Vec<[usize;N]>>>>=vec![];
-
 		let path = Path::new(&txtfile);
 		//println!("path: {:?}", path);
 		let file = File::open(&path).expect("file not found");
@@ -2427,7 +2608,6 @@ impl samples{
 		sample
 	}
 }
-
 /*
 fn test_testrun(){
 	let mut testres:Vec<Vec<f64>>=vec![];
@@ -2608,10 +2788,6 @@ impl testrun{
 					draw_line3((xi,y0),(xi,y1),mcol,&mut img);
 				}
 			}
-
-
-
-			
 		}
 		
 		img.save(filepath);
