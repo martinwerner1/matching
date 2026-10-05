@@ -6,7 +6,7 @@ Matching algorithms for the retrieval of all stable outcomes in two-sided and N-
 
 This project comprises the following algorithms:
 
-- N-sided matching (all stable outcomes) **NEW!**
+- N-sided matching (all stable outcomes) **IMPROVED SPEED! NEW!**
 - DeepSearch (many-to-one, one-to-one, all stable outcomes)
 - BitSync (one-to-one, all stable outcomes)
 - Lattice matching with hash values (one-to-one, all stable outcomes, slow mode)
