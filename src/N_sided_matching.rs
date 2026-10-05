@@ -1896,21 +1896,12 @@ impl n_sided_matching {
 			let next:Vec<usize>=get_id_from_num(val,n*n);
 			println!("next {:?}",next);
 			for i in 0..next.len(){
-				
-							
 				let mut tmp_i:Vec<usize>=tmp.clone();
-				
-				
 				tmp_i.push(next[i]);
-				
-				//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-				//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
 				let mut matches_i=stable_sync(&bp,val,tmp_i,next[i],bs);
 				matches.append(&mut matches_i);
-			
 			}
 			}
-		
 		}
 		println!("matches: {:?}",matches);
 		matches
@@ -2006,14 +1997,12 @@ impl n_sided_matching {
 		matchres
 	}
 	fn run_loop(&self,tmp:Vec<[usize;N]>)->Vec<Vec<[usize;N]>>{
-		let mut matchres:Vec<Vec<[usize;N]>>=vec![];
-		
+		let mut matchres:Vec<Vec<[usize;N]>>=vec![];		
 		matchres
 	}
 	fn run(&mut self){
 		
 	}
-	
 	// 3-sided: 1 side have optimal, the other 2 sides have pessimal solutions(?)
 	// lattice structure: 3 times gale-shapley! three points in a row (in preference for each agent)! the outer points are the
 	// boundaries!(?) -> proof!
@@ -2021,7 +2010,6 @@ impl n_sided_matching {
 	fn galeshapley(&self){
 		// pcursor defines the index of the proposing set of agents in pref. the other sets are the ones that have to accept/refuse
 		// proposals from the set of pcursor!
-		
 		let mut pcursor:usize=1;
 		let mut unmatched:Vec<usize>=vec![];
 		let mut proposals:Vec<usize>=vec![];
@@ -2033,8 +2021,7 @@ impl n_sided_matching {
 			unmatched.push(i);
 			proposals.push(0);
 		}
-		// since this algorithm is sensitive to the proposal order, we have to do some tests with respect to the proposal order!
-		
+		// since this algorithm is sensitive to the proposal order, we have to do some tests with respect to the outcomes depending on the proposal order!
 		let mut rng = rand::rng();
 		unmatched.shuffle(&mut rng);
 		println!("unmatched:{:?}",unmatched);
@@ -2046,13 +2033,11 @@ impl n_sided_matching {
 			}
 			tmp.push(tmp_i);
 		}
-		
 		while unmatched.len()>0{
 			let first:usize=unmatched[0];
 			// the first holds for self.pref_notranslated
 			//let candvec:[usize;N_SIDED-1]=self.pref_notranslated[pcursor][first][proposals[first]].clone();
 			// candidates for forming a group
-			
 			// ERROR!
 			println!("first:{}, proposals:{:?}",first,proposals);
 			let cand:[usize;N]=self.pref[pcursor][first][proposals[first]].clone();
@@ -2073,9 +2058,7 @@ impl n_sided_matching {
 							acc=false;
 							break;
 						}
-						
-						
-						// imposing the idea of net gain!
+						// imposing net gain!
 						//net_gain-=pos_cand as i32;
 						//net_gain+=pos_curr as i32;						
 					}
@@ -2639,25 +2622,11 @@ impl testrun{
 fn bp_matrix(adj:&Vec<Vec<[usize;2]>>)->Vec<Vec<bool>>{
 	let mut mat:Vec<Vec<bool>>=vec![];
 	let n:usize=adj.len();
-	//for i in 0..n*n{
 	for i in 0..n{		
-		println!("bp_matrix i:{}, len:{}",i,adj.len());
-		//for j in 0..i{
 		for j in 0..n{
 			let mut row:Vec<bool>=vec![];
-			//let mut idx:usize=i*n+j;
 			for k in 0..n{
-				for m in 0..n{
-					/*
-					let mut idx_2:usize=k*n+m;
-					if idx_2<idx{
-						
-					}
-					*/
-					// BE VERY CAREFUL!!!!!!!
-					//if i!=k && j!=m{
-					
-					//if !(i==k && j==m){
+				for m in 0..n{			
 					if !(i==k || j==m){
 						if !bp_efficient(&adj,&[i,j],&[k,m],0){
 							row.push(true);
@@ -2677,14 +2646,12 @@ fn bp_matrix(adj:&Vec<Vec<[usize;2]>>)->Vec<Vec<bool>>{
 	mat
 }
 fn bp_efficient(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize)->bool{
-//fn bp_efficient(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize) -> bool {
 	if adj[a[0]][b[1]][0]+diff<adj[a[0]][a[1]][0]{
 		if adj[a[0]][b[1]][1]+diff<adj[b[0]][b[1]][1]{
 			return true;
 		}
 	}
-	// "ELSE IF" IS NOT WORKING CORRECTLY!!!!!!!
-	//else if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
+	// "ELSE IF" IS NOT WORKING PROPERLY!!!!!!!
 	if adj[b[0]][a[1]][0]+diff<adj[b[0]][b[1]][0]{
 		if adj[b[0]][a[1]][1]+diff<adj[a[0]][a[1]][1]{
 			return true;
@@ -2694,37 +2661,12 @@ fn bp_efficient(adj:&Vec<Vec<[usize;2]>>,a:&[usize;2],b:&[usize;2],diff:usize)->
 }
 fn get_id_from_num(num:usize,bs:usize)->Vec<usize>{
 	let mut new:Vec<usize>=vec![];
-	//let num:usize=31;
-	//let raw=BitVec::from_element(7_usize);
 	let raw = num.view_bits::<Lsb0>();
-	//println!("RAW {:?}",raw);
 	let len:usize=raw.len();
-	
-	//println!("BIT VEC: {:?}",bp_matrix_2usize(&bp_matrix));
-	//println!("BIT VEC BLOCK: {:?}",bp_matrix_2usize_block(&bp_matrix,5));
-	
-	
-	//println!("TEST LARGE NUMBERS BIT: {}", 340282366920938463463374600121768211455 as u128 & 20000000000000000000000 as u128);
-	
-	//340282366920938463463374607431768211455
-	
-	
-	
-	//let bits=raw.iter_ones().position(|x| x==1).unwrap();
 	let bits=raw.iter_ones();//.filter(|x| *x==1);
-	//println!("BITS ITER {:?}",bits);
-	
-	//println!("TEST BIT ITER: {}",raw.len());
-	//println!("TEST RAW ITER ONES: {:?}",raw.iter_ones().rev());
 	for bit in raw.iter_ones().rev(){
-		//print
-		//println!("bit: {}, bs: {} ",bit,bs);
-		//new.push(len-bit);
-		
 		new.push(bs-bit-1);
 	}
-	//println!();
-	//println!("GET ID NEW: {:?}",new);
 	new
 }
 fn bp_matrix_half(bp:&Vec<Vec<bool>>)->Vec<Vec<bool>>{
@@ -2757,21 +2699,12 @@ fn stable_sync(bp:&Vec<usize>,mask:usize,tmp:Vec<usize>,i_pos:usize,bs:usize)->V
 		let next:Vec<usize>=get_id_from_num(val,n*n);
 		println!("next {:?}",next);
 		for i in 0..next.len(){
-			
-						
 			let mut tmp_i:Vec<usize>=tmp.clone();
-			
-			
 			tmp_i.push(next[i]);
-			
-			//matches.append(&mut stable_sync(&bp,val,tmp_i,i_pos+1,bs));
-			//matches.append(&mut stable_sync(&bp,val,tmp_i,next[i],bs));
 			let mut matches_i=stable_sync(&bp,val,tmp_i,next[i],bs);
 			matches.append(&mut matches_i);
-		
 		}
 		}
-	
 	}
 	println!("matches: {:?}",matches);
 	matches
