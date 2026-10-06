@@ -29,7 +29,7 @@ use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 use std::process;
 
-const N:usize=3;
+const N:usize=4;
 fn main(){
 	test_deepsearch_n_sided();
 }
@@ -39,7 +39,7 @@ fn measure_time( elap: Duration) {
 }
 pub fn test_deepsearch_n_sided(){
 	let mut n_sided:n_sided_matching=n_sided_matching::new();
-	n_sided.init(5);
+	n_sided.init(3);
 	println!("\n##########################################################\n");
 	n_sided.show_pref();
 	// COMMENTED!
