@@ -74,18 +74,19 @@ pub fn test_deepsearch_n_sided(){
 	println!("N-SIDED MATCHING (N={}, n={} with random preference lists)!\n",N,n);
 
 
-	/*
+	
+	
 	let time_ds1: SystemTime = SystemTime::now();
-	//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
+	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
 	let elapsed_ds1 = time_ds1.elapsed().unwrap();	
-	measure_time(elapsed_ds1);		
-	*/
+	//measure_time(elapsed_ds1);		
+	
 
 	//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch2(&vec![],&[0;N],0,0,&n_sided.nvec);
 
-	/*
+	
 	let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
-	println!("ALL STABLE MATCHES DEEPSEARCH 1:");
+	println!("ALL STABLE MATCHES:");
 	//for i in 0..matches_deepsearch.len(){
 	for i in 0..matches_clean.len(){
 		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
@@ -93,8 +94,9 @@ pub fn test_deepsearch_n_sided(){
 		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
 	}
 	println!();
-	*/
+	
 
+	/*
 	let time_ds2: SystemTime = SystemTime::now();
 	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch2_wrapper();
 	let elapsed_ds2 = time_ds2.elapsed().unwrap();	
@@ -109,10 +111,10 @@ pub fn test_deepsearch_n_sided(){
 	//for i in 0..matches_clean.len(){
 		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
 		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
-		//print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
-		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_deepsearch[i]));
+		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
+		//print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_deepsearch[i]));
 	}
-	
+	*/
 }
 /* This struct is for creating matching outcomes for many-to-one-to-many N-sided matchings.
  * We have n-vector for multiple n values for each set of agents S_i. We also have a cap vector for 
@@ -930,7 +932,39 @@ impl n_sided_matching {
 		let mut matches:Vec<Vec<[usize;N]>>=vec![];
 		//for y in 0..self.prodvec[1]{
 			//matches.append(&mut self.deepsearch2(&vec![],y,&self.nvec));
-			matches.append(&mut self.deepsearch4(&vec![],0,&self.nvec));
+
+			
+			let time_ds4: SystemTime = SystemTime::now();
+			//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
+			//matches.append(&mut self.deepsearch4(&vec![],0,&self.nvec));
+			matches=self.deepsearch4(&vec![],0,&self.nvec);
+			let elapsed_ds4 = time_ds4.elapsed().unwrap();	
+			println!("DEEPSEARCH 4");
+			measure_time(elapsed_ds4);		
+			
+			println!("ALL STABLE MATCHES DEEPSEARCH 4");
+			for i in 0..matches.len(){
+				println!("MATCH {}: {:?}",i+1,matches[i]);
+			}
+
+
+			
+			let time_ds4b: SystemTime = SystemTime::now();
+			//let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch(&vec![],&[0;N],0,&n_sided.nvec);
+			//matches.append(&mut self.deepsearch4b(&vec![],0,&self.nvec));
+			matches=self.deepsearch4b(&vec![],0,&self.nvec);
+			let elapsed_ds4b = time_ds4b.elapsed().unwrap();	
+			println!("DEEPSEARCH 4B");
+			measure_time(elapsed_ds4b);		
+			
+			println!("ALL STABLE MATCHES DEEPSEARCH 4B");
+			for i in 0..matches.len(){
+				println!("MATCH {}: {:?}",i+1,matches[i]);
+			}
+
+			println!();
+
+
 		//}
 		matches
 	}
@@ -1066,6 +1100,36 @@ impl n_sided_matching {
 							tmp_chain.push(dec_coalition);
 							if self.local_search_blocking_coalition_intersection_wrapper(&tmp_chain){							
 								matches.append(&mut self.deepsearch4(&tmp_chain,idx+1,&nvec));
+							}
+						}
+					}
+				}			
+			}
+		}
+		matches
+	}
+	fn deepsearch4b(&self,chain:&Vec<[usize;N]>,idx:usize,nvec:&Vec<usize>)->Vec<Vec<[usize;N]>>{
+		//println!("y:{}",y);
+		//println!("DEEPSEARCH 4");
+		let mut matches:Vec<Vec<[usize;N]>>=vec![];
+		if chain.len()==self.min_n{
+			return vec![chain.to_vec()];
+		}
+		else{
+			if idx<N{
+				for y in idx*self.prodvec[1]..(idx+1)*self.prodvec[1]{
+					//let dec_coalition:[usize;N]=self.decompose2(y,&nvec);
+					let dec_coalition:[usize;N]=self.all_groups[y].clone();
+					//println!("y:{}, dec_coalition:{:?}",y,dec_coalition);
+					if self.check_integrity(&chain,&dec_coalition){
+						if chain.len()==0{
+							matches.append(&mut self.deepsearch4b(&vec![dec_coalition],idx+1,&nvec));					
+						}
+						else{		
+							let mut tmp_chain:Vec<[usize;N]>=chain.clone();
+							tmp_chain.push(dec_coalition);
+							if self.local_search_blocking_coalition_intersection_wrapper(&tmp_chain){							
+								matches.append(&mut self.deepsearch4b(&tmp_chain,idx+1,&nvec));
 							}
 						}
 					}
