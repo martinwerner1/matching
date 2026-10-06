@@ -42,18 +42,16 @@ pub fn test_deepsearch_n_sided(){
 	n_sided.init(3);
 	println!("\n##########################################################\n");
 	n_sided.show_pref();
-	// COMMENTED!
 	// DUAL WORKS!
 	
-	//n_sided.lp_eq(&vec![2,3,4,2]); // COMMENTED!
-	//n_sided.lp_run(); //HIGHS // COMMENTED!
+	//n_sided.lp_eq(&vec![2,3,4,2]); 
+	//n_sided.lp_run(); //HIGHS
 	
 	//n_sided.lp_simplex_run();
 	
-	// COMMENTED!
 	// DUAL WORKS!
-	//n_sided.lp_rustplex_run(); // COMMENTED!
-	//n_sided.lp_dual_lp_highs_run(); // COMMENTED!
+	//n_sided.lp_rustplex_run(); 
+	//n_sided.lp_dual_lp_highs_run(); 
 	
 	// preliminary, later: adjustments to nvec!
 	let n:usize=n_sided.nvec[0];
@@ -64,15 +62,8 @@ pub fn test_deepsearch_n_sided(){
 	let matches_deepsearch:Vec<Vec<[usize;N]>>=n_sided.deepsearch2_wrapper();
 	let elapsed_ds2 = time_ds2.elapsed().unwrap();	
 	//measure_time(elapsed_ds2);		
-
-	//let matches_clean:Vec<Vec<[usize;N]>>=n_sided.remove_multiple_solutions(&matches_deepsearch);
-	//let matches_clean:Vec<Vec<[usize;N]>>=matches_deepsearch.clone();
 	println!("ALL STABLE MATCHES:");
 	for i in 0..matches_deepsearch.len(){
-	//for i in 0..matches_clean.len(){
-		//println!("MATCH {}: {:?}",i+1,matches_deepsearch[i]);
-		//println!("MATCH {}: {:?}",i+1,matches_clean[i]);
-		//print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_clean[i]));
 		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_deepsearch[i]));
 	}
 	
