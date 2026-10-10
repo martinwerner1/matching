@@ -5,7 +5,7 @@ Matching algorithms for the retrieval of all stable outcomes in two-sided and N-
 ## PAPERS
 - The BitSync Algorithm
   (https://github.com/martinwerner1/matching/blob/main/PAPERS/BitSync_Algorithm.pdf)
-- Stability in N-Sided Matching (upcoming, still in progress)
+- Stability in N-Sided Matching (upcoming)
 
 ## ALGORITHMS
 
