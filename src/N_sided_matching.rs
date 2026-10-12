@@ -67,6 +67,13 @@ pub fn test_deepsearch_n_sided(){
 		print!("MATCH {}: {}",i+1,n_sided.transform_match_2string(&matches_deepsearch[i]));
 	}
 	
+	// This is for the documentation of the intersection method of the N-sided stability function. It is adjusted to the given preference sets 
+	// in the specified folder (Please switch from "create_random_pref2_stack" to "read_all_pref" in init function!). Uncomment if needed!
+	/*
+	let unstable_chain:Vec<[usize;N]>=vec![[0,0,0,2],[1,2,2,0],[2,1,1,1]];
+	let blocking_coalitions:Vec<[usize;N]>=n_sided.local_search_blocking_coalition_intersection__blocking_coalitions_wrapper(&unstable_chain);
+	println!("blocking coalitions:\n{:?}",blocking_coalitions);
+	*/
 }
 /* This struct is for creating matching outcomes for many-to-one-to-many N-sided matchings.
  * We have n-vector for multiple n values for each set of agents S_i. We also have a cap vector for 
@@ -823,6 +830,62 @@ impl n_sided_matching {
 		}		
 		true
 	}	
+
+	// returns all blocking coalitions if the chain is unstable!
+	fn local_search_blocking_coalition_intersection__blocking_coalitions_wrapper(&self,chain:&Vec<[usize;N]>)->Vec<[usize;N]>{
+		let mut blocking_coalitions:Vec<[usize;N]>=vec![];
+		for i in 0..chain.len(){
+			let player:usize=chain[i][0];
+			let pos:usize=self.pref[0][player].iter().position(|x| *x==chain[i]).unwrap();
+			let intersct:&Vec<[usize;N]>=&self.pref[0][player][0..pos].to_vec();
+			/*
+			if !self.local_search_blocking_coalition_intersection_blocking_coalitions(&chain,1,&intersct){
+				return false;
+			}
+			*/
+			blocking_coalitions.append(&mut self.local_search_blocking_coalition_intersection_blocking_coalitions(&chain,1,&intersct));
+		}
+		//true
+		blocking_coalitions
+	}
+
+
+	// can be improved (difference of chain-lenghts) but this is failsafe!
+	// returns all blocking coalitions if chain is unstable! this is just for testing purposes!
+	fn local_search_blocking_coalition_intersection_blocking_coalitions(&self,chain:&Vec<[usize;N]>,idx:usize,intersct:&Vec<[usize;N]>)->Vec<[usize;N]>{
+		let mut blocking_coalitions:Vec<[usize;N]>=vec![];
+		if idx==N{
+			//return intersct.clone();
+			if intersct.len()>0{
+				//return false;
+				return intersct.to_vec();
+			}
+		}
+		else{
+			// no intersct, no blocking coalitions!
+			if intersct.len()==0{
+				//return true;
+			}
+			else{
+				for i in 0..chain.len(){
+					let player:usize=chain[i][idx];
+					let pos:usize=self.pref[idx][player].iter().position(|x| *x==chain[i]).unwrap();
+					let slice:&Vec<[usize;N]>=&self.pref[idx][player][0..pos].to_vec(); // all coalitions that are more preferred than the current one.
+					let intersct_i:Vec<[usize;N]>=Self::intersection_coalition(&intersct,&slice);
+					/*
+					if !self.local_search_blocking_coalition_intersection_blocking_coalitions(&chain,idx+1,&intersct_i){
+						return false;
+					}
+					*/	
+					blocking_coalitions.append(&mut self.local_search_blocking_coalition_intersection_blocking_coalitions(&chain,idx+1,&intersct_i));
+				}
+			}
+		}		
+		//true
+		blocking_coalitions
+	}	
+
+
 	fn decrement_quota(&self){
 		
 	}
