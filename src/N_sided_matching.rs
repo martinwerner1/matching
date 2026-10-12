@@ -618,6 +618,7 @@ impl n_sided_matching {
 	fn init(&mut self,n:usize){
 		self.pref=Self::create_random_pref2_stack(n);
 		//self.pref=Self::read_all_pref("kpref/".to_string());
+		Self::write_all_pref(&self.pref,"N_sided_pref/".to_string());
 		self.nvec=vec![n;N];
 		self.prodvec=self.get_prodvec_from_nvec(&self.nvec);
 		(self.min_n,self.max_n)=self.get_minmax_n(&self.nvec);
@@ -694,6 +695,29 @@ impl n_sided_matching {
 		println!("PREF:\n{:?}",pref);
 		pref
 	}
+	/*
+	fn write_pref(&self,folder:String){
+		for i in 0..self.pref.len(){
+			let mut txt:String="".to_string();
+			for j in 0..self.pref[i].len(){
+				txt+=&format!("{:?}",self.pref[i][j]).to_string();
+				txt+="\n";
+			}
+			let mut filepath:String=folder.clone();
+			let filepath_chars:Vec<char>=filepath.chars().collect();
+			if filepath_chars[filepath.len()-1]=='/'{
+				filepath+="pref_";
+			}
+			else{
+				filepath+="/pref_";
+			}
+			filepath+=&i.to_string();
+			let mut fs=File::create(filepath);
+			fs.expect("File cannot be created").write_all(txt.as_bytes());
+		}
+	}
+	*/
+	
 	fn show_pref(&self){
 		let agent:[&str;26]=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
 		let sets:[&str;26]=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
@@ -1679,6 +1703,24 @@ impl n_sided_matching {
 			}
 		}
 		fs.expect("Problem with the file!").write_all(txt.as_bytes());
+	}
+	pub fn write_all_pref(prefs:&Vec<Vec<Vec<[usize;N]>>>,folder:String){
+		let mut folder_pattern:String=folder;
+		println!("folder_pattern:{}",folder_pattern.len());
+		let folder_len:usize=folder_pattern.len();
+		let chars:Vec<char>=folder_pattern.chars().collect();
+		//if folder_pattern.chars().collect()<Vec<char>>.iter()[folder_len-1]!='/'{
+		if chars[folder_len-1]!='/'{
+			println!("NO '/' INSIDE!");
+			folder_pattern+="/";
+		}
+		folder_pattern+="pref_";
+		for i in 0..prefs.len(){
+			let mut file_i:String=folder_pattern.clone();
+			file_i+=&i.to_string();
+			file_i+=".txt";
+			Self::write_pref(&prefs[i],file_i);
+		}
 	}
 	fn create_samples(n:usize,samplesize:usize){
 		for i in 0..samplesize{
