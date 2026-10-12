@@ -617,8 +617,8 @@ impl n_sided_matching {
 	}
 	fn init(&mut self,n:usize){
 		self.pref=Self::create_random_pref2_stack(n);
-		//self.pref=Self::read_all_pref("kpref/".to_string());
-		Self::write_all_pref(&self.pref,"pref_n_sided/".to_string());
+		//self.pref=Self::read_all_pref("pref_n_sided/".to_string());
+		//Self::write_all_pref(&self.pref,"pref_n_sided/".to_string());
 		self.nvec=vec![n;N];
 		self.prodvec=self.get_prodvec_from_nvec(&self.nvec);
 		(self.min_n,self.max_n)=self.get_minmax_n(&self.nvec);
@@ -638,11 +638,19 @@ impl n_sided_matching {
 		}
 		(min,max)
 	}
-	fn read_all_pref(folder:String)->Vec<Vec<Vec<[usize;N]>>>{
+	fn read_all_pref(folder_:String)->Vec<Vec<Vec<[usize;N]>>>{
 		let mut prefs:Vec<Vec<Vec<[usize;N]>>>=vec![];
+		let mut folder:String=folder_;
+		let folder_len:usize=folder.len();
+		let folder_chars:Vec<char>=folder.chars().collect();
+		if folder_chars[folder_len-1]!='/'{
+			folder+="/";
+		}
 		for i in 0..N{
 			//let mut filepath:String="nsided/pref_".to_string();
-			let mut filepath:String="./kpref/pref_".to_string();
+			//let mut filepath:String="./kpref/pref_".to_string();
+			let mut filepath:String=folder.clone();
+			filepath+="pref_";
 			filepath+=&i.to_string();
 			filepath+=".txt";
 			let pref:Vec<Vec<[usize;N]>>=Self::read_pref3(filepath);
