@@ -618,7 +618,7 @@ impl n_sided_matching {
 	fn init(&mut self,n:usize){
 		self.pref=Self::create_random_pref2_stack(n);
 		//self.pref=Self::read_all_pref("kpref/".to_string());
-		Self::write_all_pref(&self.pref,"N_sided_pref/".to_string());
+		Self::write_all_pref(&self.pref,"pref_n_sided/".to_string());
 		self.nvec=vec![n;N];
 		self.prodvec=self.get_prodvec_from_nvec(&self.nvec);
 		(self.min_n,self.max_n)=self.get_minmax_n(&self.nvec);
