@@ -5,6 +5,7 @@ use rand::seq::SliceRandom;
 use std::path::Path;
 
 use super::helper::{IOClass};
+use super::tex;
 use std::{
 	fs::{self, File},
 	io::{self, BufRead},
@@ -68,13 +69,20 @@ pub fn test_deepsearch_n_sided(){
 	}
 	
 	// This is for the documentation of the intersection method of the N-sided stability function. It is adjusted to the given preference sets 
-	// in the specified folder (Please switch from "create_random_pref2_stack" to "read_all_pref" in init function!). Uncomment if needed!
+	// in the specified folder (Please switch from "create_random_pref2_stack" to "read_all_pref" in init function!). Uncomment and adjust N at the top of the code ("const N:usize=4;") if needed!
+	
+	// This unstable chain is set for our given example and for N=4. If another N is chosen, please ensure the consistency of this chain!
 	/*
 	let unstable_chain:Vec<[usize;N]>=vec![[0,0,0,2],[1,2,2,0],[2,1,1,1]];
 	let blocking_coalitions:Vec<[usize;N]>=n_sided.local_search_blocking_coalition_intersection__blocking_coalitions_wrapper(&unstable_chain);
 	println!("blocking coalitions:\n{:?}",blocking_coalitions);
 	*/
+	
+	// This function displays the LaTex code of a table showing all possible constellations for forming a blocking coalition at given chain length |c| (here: |c|=3).
+	//test_idx();
+	
 }
+
 /* This struct is for creating matching outcomes for many-to-one-to-many N-sided matchings.
  * We have n-vector for multiple n values for each set of agents S_i. We also have a cap vector for 
  * many-to-one matching with multiple constellations of agents of the same set!
@@ -853,6 +861,7 @@ impl n_sided_matching {
 	// can be improved (difference of chain-lenghts) but this is failsafe!
 	// returns all blocking coalitions if chain is unstable! this is just for testing purposes!
 	fn local_search_blocking_coalition_intersection_blocking_coalitions(&self,chain:&Vec<[usize;N]>,idx:usize,intersct:&Vec<[usize;N]>)->Vec<[usize;N]>{
+		//println!("idx:{}, chain:{:?}, intersct:{:?}",idx,chain,intersct);
 		let mut blocking_coalitions:Vec<[usize;N]>=vec![];
 		if idx==N{
 			//return intersct.clone();
@@ -877,6 +886,7 @@ impl n_sided_matching {
 						return false;
 					}
 					*/	
+					println!("idx:{}, player:{}, intersection:{:?}",idx,player,intersct);
 					blocking_coalitions.append(&mut self.local_search_blocking_coalition_intersection_blocking_coalitions(&chain,idx+1,&intersct_i));
 				}
 			}
@@ -3049,4 +3059,95 @@ fn vec_i8_switch_2_negativity(vec:&Vec<i8>)->Vec<i8>{
 		vec_neg.push((-1)*vec[i]);
 	}
 	vec_neg
+}
+
+
+
+// matroid over coalitions, which agents of which coalitions can be used for blocking coalition
+fn get_idx4(idx:&Vec<Vec<usize>>,gc:usize,n:usize)->Vec<Vec<Vec<usize>>>{
+	let mut result:Vec<Vec<Vec<usize>>>=vec![];
+	if gc==n{
+		if get_complete(&idx).len()==N{
+			return vec![idx.to_vec()];
+		}
+		else{
+			return vec![];
+		}
+	}
+	else{
+		let complete:Vec<usize>=get_complete(&idx);
+		let rem:usize=N-complete.len()-(n-gc)+1;
+		let mut tmp:Vec<Vec<usize>>=get_id_helper3(vec![],0,rem,&idx);
+		for i in 0..tmp.len(){
+			let mut new_idx:Vec<Vec<usize>>=idx.clone();
+			new_idx.push(tmp[i].clone());
+			let mut tmp_result:Vec<Vec<Vec<usize>>>=get_idx4(&new_idx,gc+1,n);
+			if tmp_result.len()>0{
+				result.append(&mut tmp_result);
+			}
+		}
+	}
+	result
+}
+
+
+fn get_id_helper3(tmp:Vec<usize>,cursor:usize,rem:usize,idx:&Vec<Vec<usize>>)->Vec<Vec<usize>>{
+	let mut total:Vec<Vec<usize>>=vec![];
+	let mut result:Vec<usize>=tmp.clone();
+	if (rem==0) || (cursor==N){
+		//println!("### RESULT: {:?}",result);
+		return vec![tmp.clone()];
+	}
+	else{
+		if tmp.len()>0{
+			total.append(&mut vec![tmp.clone()]);
+		}
+		let mut complete:Vec<usize>=vec![];
+		for i in 0..idx.len(){
+			complete.append(&mut idx[i].clone());
+		}
+		complete.append(&mut result.clone());
+		for i in cursor..N{
+			if !complete.contains(&i){
+				let mut new_result:Vec<usize>=result.clone();
+				new_result.push(i);
+				let mut tmp_result:Vec<Vec<usize>>=get_id_helper3(new_result.clone(),i+1,rem-1,&idx);
+				total.append(&mut tmp_result);
+			}
+		}
+	}
+	total
+}
+fn get_complete(a:&Vec<Vec<usize>>)->Vec<usize>{
+	let mut result:Vec<usize>=vec![];
+	for i in 0..a.len(){
+		result.append(&mut a[i].clone());
+	}
+	result
+}
+
+
+fn test_idx(){
+	let mut idx:Vec<Vec<usize>>=vec![vec![],vec![3]];
+	//let result:Vec<usize>=get_id_helper2(vec![],0,3,&idx);
+	
+	//let result:Vec<Vec<usize>>=get_id_helper2(vec![],0,4,&idx);
+	//let clean:Vec<Vec<usize>>=delete_doubles(&result);
+	//println!("result:{:?}",result);
+	//println!("clean:{:?}",clean);
+	//let stable:Vec<Vec<Vec<usize>>>=get_idx3(&vec![],0,3);
+	//let stable:Vec<Vec<Vec<usize>>>=get_idx4(&vec![],0,5);
+	let stable:Vec<Vec<Vec<usize>>>=get_idx4(&vec![],0,3);
+	//let stable:Vec<Vec<Vec<usize>>>=get_idx4(&vec![],0,3);
+	for i in 0..stable.len(){
+		//println!("stable {}: {:?}",i,stable[i]);
+	}
+	
+	/*
+	let result2:Vec<Vec<usize>>=get_id_helper3(vec![],0,2,&vec![vec![2]]);
+	let clean2:Vec<Vec<usize>>=delete_doubles(&result2);
+	println!("result:{:?}",result2);
+	println!("clean:{:?}",clean2);
+	*/
+	tex::N_sided_tex::get_table(N,&stable);
 }
