@@ -571,3 +571,73 @@ impl Gamma{
 		txt
 	}
 }
+pub struct N_sided_tex{
+	
+}
+impl N_sided_tex{
+	//shows table of all possible constellations for forming a blocking group at given chain length |c|
+	pub fn get_table(bigN:usize,vecs:&Vec<Vec<Vec<usize>>>){
+		let mut txt:String=String::new();
+		if vecs.len()>0{
+			let cols:usize=vecs[0].len();
+			txt+="\\begin{table}\n\\centering\n\\begin{tabular}{|l|";
+			for i in 0..bigN*cols{
+				txt+="c";
+				//if i<N*cols-1{
+				if (i+1)%bigN==0{
+					txt+="|";
+				}
+			}
+			txt+="}\\hline\n";
+			// define the headers!
+			txt+="&";
+			for i in 0..cols{
+				txt+=&format!("\\multicolumn{{{}}}{{c|}}{{$\\mathcal{{A}}_{}$}}",bigN,i+1).to_string();
+				if i<cols-1{
+					txt+="&";
+				}
+				else{
+					txt+="\\\\\\hline\n";
+				}
+			}
+			txt+="$i$&";
+			for i in 0..cols{
+				for j in 0..bigN{
+					txt+=&format!("$S_{}$",j+1).to_string();
+					if (i+1)*(j+1)!=cols*bigN{
+						txt+="&";
+					}
+					else{
+						txt+="\\\\\\hline\n";
+					}
+				}
+			}
+			// corpus
+			for i in 0..vecs.len(){
+				txt+=&(i+1).to_string();
+				txt+="&";
+				for j in 0..vecs[i].len(){				
+					for k in 0..bigN{
+						if vecs[i][j].contains(&k){
+							txt+="x";
+						}						
+						if !((j+1)*(k+1)==cols*bigN){
+							txt+="&";
+						}
+						
+					}
+				}
+				txt+="\\\\";
+				if i==vecs.len()-1{
+					txt+="\\hline\n";
+				}
+				else{
+					txt+="\n";
+				}
+			}
+			txt+="\\end{tabular}\n\\end{table}\n";
+		}
+		println!("{}",txt);
+	}
+
+}
