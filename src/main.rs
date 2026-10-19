@@ -15,6 +15,8 @@ use display::manyone;
 fn main(){
 
 	// N-SIDED MATCHING BASED ON INTERSECTION METHOD, RANDOM PREFERENCES
+	// For choosing another N (amount of sets of players), please adjust the value N in the line "const N:usize=4;" in N_sided_matching.rs!
+	// For choosing another n (amount of players for each set), please adjust the init value in the line "n_sided.init(3);" in N_sided_matching.rs!
 	N_sided_matching::test_deepsearch_n_sided();
 
 
