@@ -21,7 +21,7 @@ This project comprises the following algorithms:
 - DA algorithm for many-to-many matching
 
 Algorithms that are still under construction:
-- N-sided matching with incomplete preference lists and variable preference descriptions ("(a1,c3) > (b2) > (a1,b2,c3,d4) > (a2,c1,d4) > (a1) > ...") **NEW**
+- N-sided matching with incomplete preference lists and alternative preference descriptions ("(a1,c3) > (b2) > (a1,b2,c3,d4) > (a2,c1,d4) > (a1) > ...") **NEW**
 - Lattice matching with smart pointers
 - Lattice matching with merging matching trees (matching tree as a partial result on lattice layer Lk)
 - N-sided matching for many-to-many-to-many-to-many matching, quotas for all agents
