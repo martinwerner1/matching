@@ -89,7 +89,7 @@ pub struct gale_shapley{
 	proposals:Vec<usize>,
 	unmatched:Vec<usize>,
 	wtmp:Vec<usize>,
-	// when the algorithm finishes, the vale of wtmp will be copied to matchres
+	// when the algorithm finishes, the value of wtmp will be copied to matchres
 	matchres:Option<Vec<usize>>
 }
 impl gale_shapley{
